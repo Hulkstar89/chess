@@ -112,8 +112,15 @@ public class board {
                 case 'Q':
                     System.out.println("queen move");
                     // find valid move for piece
+                    queenValidMove("white queen");
                     // check if a valid move matches user input
-                    // move the piece
+                    for (int i = 0; i < pieces.get("white queen").validMoves.size(); i++) {
+                        if (pieces.get("white queen").validMoves.get(i)
+                                .equals(userInput.substring(1))) {
+                            // move the piece
+                            pieces.get("white queen").setLocation(userInput.substring(1));
+                        }
+                    }
                     break;
                 case 'N':
                     System.out.println("knight move");
@@ -124,17 +131,29 @@ public class board {
                 case 'B':
                     System.out.println("bishop move");
                     // find valid move for piece
-                    bishopValidMove("white bishop - 1");
-                    bishopValidMove("white bishop - 2");
+                    for (int i = 0; i < lettersArr.length; i++) {
+                        try {
+                            bishopValidMove("white bishop - 1");
+                            bishopValidMove("white bishop - 2");
+                        } catch (Exception e) {
+
+                        }
+                    }
 
                     // check if a valid move matches user input
                     for (int j = 1; j < 3; j++) {
-                        for (int i = 0; i < pieces.get("white bishop - " + j).validMoves.size(); i++) {
-                            if (pieces.get("white bishop - " + j).validMoves.get(i).equals(userInput.substring(1))) {
-                                // move the piece
-                                pieces.get("white bishop - " + j).setLocation(userInput.substring(1));
+                        try {
+                            for (int i = 0; i < pieces.get("white bishop - " + j).validMoves.size(); i++) {
+                                if (pieces.get("white bishop - " + j).validMoves.get(i)
+                                        .equals(userInput.substring(1))) {
+                                    // move the piece
+                                    pieces.get("white bishop - " + j).setLocation(userInput.substring(1));
+                                }
                             }
+                        } catch (Exception e) {
+                            // TODO: handle exception
                         }
+
                     }
 
                     break;
@@ -254,7 +273,8 @@ public class board {
         }
     }
 
-    private void bishopValidMove(String name) {
+    private void queenValidMove(String name) {
+        pieces.get(name).validMoves.clear();
         char[] locationArr = pieces.get(name).location.toCharArray();
         char[] lettersArr = { 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h' };
         int numberVersionOfLetter = 100;
@@ -312,7 +332,7 @@ public class board {
 
         }
 
-        //down and left
+        // down and left
         for (int j = 1, i = numberVersionOfLetter; j <= 8; i--, j++) {
             int tempNumberLocation = numberlocation - j;
 
@@ -336,7 +356,195 @@ public class board {
 
         }
 
-        //up and left
+        // up and left
+        for (int j = 1, i = numberVersionOfLetter; j <= 8; i--, j++) {
+            int tempNumberLocation = numberlocation + j;
+
+            String tempLetterLocation = decreaseLetter(lettersArr[i]);
+
+            // ensure locaiton is on the borad
+            if (tempNumberLocation > 8 || tempLetterLocation.equals("")) {
+                break;
+            }
+
+            String tempLocation = tempLetterLocation + tempNumberLocation;
+
+            // make sure the location is empty
+            if (whoIsAtLocationBackend(tempLocation).equals("")) {
+                // add the temp location as a valid move
+                pieces.get(name).validMoves.add(tempLocation);
+            } else {
+                // someone is there and stop looking in this direction
+                break;
+            }
+
+        }
+
+
+
+
+
+
+        String letterLocation = Character.toString(locationArr[0]);
+
+         // up
+
+         for (int i = numberlocation; i <= 8; i++) {
+
+            // make sure locaiton in empty
+            String tempLocation = letterLocation + i;
+            if (tempLocation.equals(pieces.get(name).location)) {
+                continue;
+            }
+
+            if (whoIsAtLocationBackend(tempLocation).equals("")) {
+                pieces.get(name).validMoves.add(tempLocation);
+            } else {
+                
+                break;
+            }
+
+        }
+
+        // down
+        for (int i = numberlocation; i >= 1; i--) {
+
+            // make sure locaiton in empty
+            String tempLocation = letterLocation + i;
+            if (tempLocation.equals(pieces.get(name).location)) {
+                continue;
+            }
+            //ensure that the location is on the bou
+            if (whoIsAtLocationBackend(tempLocation).equals("")) {
+                pieces.get(name).validMoves.add(tempLocation);
+            } else {
+                break;
+            }
+
+        }
+
+        // right
+       
+        for (int letterLocationInt = 0; letterLocationInt < 8; letterLocationInt++) {
+            if (locationArr[0] == lettersArr[letterLocationInt]) {
+                for (int i = letterLocationInt; i <= 7; i++) {
+                    
+                    String tempLocation = increaseLetter(lettersArr[i]) + numberlocation;
+                    // check empty
+
+                    if (whoIsAtLocationBackend(tempLocation).equals("")) {
+                        pieces.get(name).validMoves.add(tempLocation);
+                    } else {
+                        break;
+                    }
+                    
+                }
+            }
+        }
+
+        // left
+        for (int letterLocationInt = 0; letterLocationInt < 8; letterLocationInt++) {
+            if (locationArr[0] == lettersArr[letterLocationInt]) {
+                for (int i = letterLocationInt; i >= 1; i--) {
+
+                    String tempLocation = decreaseLetter(lettersArr[i]) + numberlocation;
+                    // check empty
+
+                    if (whoIsAtLocationBackend(tempLocation).equals("")) {
+                        pieces.get(name).validMoves.add(tempLocation);
+                    } else {
+                        break;
+                    }
+
+                }
+            }
+        }
+    }
+
+    private void bishopValidMove(String name) {
+        pieces.get(name).validMoves.clear();
+        char[] locationArr = pieces.get(name).location.toCharArray();
+        char[] lettersArr = { 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h' };
+        int numberVersionOfLetter = 100;
+        for (int i = 0; i < lettersArr.length; i++) {
+            if (locationArr[0] == lettersArr[i]) {
+                numberVersionOfLetter = i;
+            }
+        }
+        int numberlocation = Integer.parseInt(Character.toString(locationArr[1]));
+        // String letterLocation = Character.toString(locationArr[0]);
+        // up and right
+        for (int j = 1, i = numberVersionOfLetter; j <= 8; i++, j++) {
+            int tempNumberLocation = numberlocation + j;
+
+            String tempLetterLocation = increaseLetter(lettersArr[i]);
+
+            // ensure locaiton is on the borad
+            if (tempNumberLocation > 8 || tempLetterLocation.equals("")) {
+                break;
+            }
+
+            String tempLocation = tempLetterLocation + tempNumberLocation;
+
+            // make sure the location is empty
+            if (whoIsAtLocationBackend(tempLocation).equals("")) {
+                // add the temp location as a valid move
+                pieces.get(name).validMoves.add(tempLocation);
+            } else {
+                // someone is there and stop looking in this direction
+                break;
+            }
+
+        }
+        // down and right
+        for (int j = 1, i = numberVersionOfLetter; j <= 8; i--, j++) {
+            int tempNumberLocation = numberlocation - j;
+
+            String tempLetterLocation = increaseLetter(lettersArr[i]);
+
+            // ensure locaiton is on the borad
+            if (tempNumberLocation < 1 || tempLetterLocation.equals("")) {
+                break;
+            }
+
+            String tempLocation = tempLetterLocation + tempNumberLocation;
+
+            // make sure the location is empty
+            if (whoIsAtLocationBackend(tempLocation).equals("")) {
+                // add the temp location as a valid move
+                pieces.get(name).validMoves.add(tempLocation);
+            } else {
+                // someone is there and stop looking in this direction
+                break;
+            }
+
+        }
+
+        // down and left
+        for (int j = 1, i = numberVersionOfLetter; j <= 8; i--, j++) {
+            int tempNumberLocation = numberlocation - j;
+
+            String tempLetterLocation = decreaseLetter(lettersArr[i]);
+
+            // ensure locaiton is on the borad
+            if (tempNumberLocation < 1 || tempLetterLocation.equals("")) {
+                break;
+            }
+
+            String tempLocation = tempLetterLocation + tempNumberLocation;
+
+            // make sure the location is empty
+            if (whoIsAtLocationBackend(tempLocation).equals("")) {
+                // add the temp location as a valid move
+                pieces.get(name).validMoves.add(tempLocation);
+            } else {
+                // someone is there and stop looking in this direction
+                break;
+            }
+
+        }
+
+        // up and left
         for (int j = 1, i = numberVersionOfLetter; j <= 8; i--, j++) {
             int tempNumberLocation = numberlocation + j;
 
@@ -363,6 +571,7 @@ public class board {
     }
 
     private void rookValidMove(String name) {
+        pieces.get(name).validMoves.clear();
         char[] locationArr = pieces.get(name).location.toCharArray();
 
         int numberlocation = Integer.parseInt(Character.toString(locationArr[1]));
@@ -381,7 +590,7 @@ public class board {
             if (whoIsAtLocationBackend(tempLocation).equals("")) {
                 pieces.get(name).validMoves.add(tempLocation);
             } else {
-                System.out.println("test");
+                
                 break;
             }
 
@@ -395,7 +604,7 @@ public class board {
             if (tempLocation.equals(pieces.get(name).location)) {
                 continue;
             }
-
+            //ensure that the location is on the bou
             if (whoIsAtLocationBackend(tempLocation).equals("")) {
                 pieces.get(name).validMoves.add(tempLocation);
             } else {
@@ -408,9 +617,9 @@ public class board {
         char[] lettersArr = { 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h' };
         for (int letterLocationInt = 0; letterLocationInt < 8; letterLocationInt++) {
             if (locationArr[0] == lettersArr[letterLocationInt]) {
-                for (int i = letterLocationInt; i <= 8; i++) {
-
-                    String tempLocation = increaseLetter(locationArr[0]) + numberlocation;
+                for (int i = letterLocationInt; i <= 7; i++) {
+                    
+                    String tempLocation = increaseLetter(lettersArr[i]) + numberlocation;
                     // check empty
 
                     if (whoIsAtLocationBackend(tempLocation).equals("")) {
@@ -418,7 +627,7 @@ public class board {
                     } else {
                         break;
                     }
-
+                    
                 }
             }
         }
@@ -428,7 +637,7 @@ public class board {
             if (locationArr[0] == lettersArr[letterLocationInt]) {
                 for (int i = letterLocationInt; i >= 1; i--) {
 
-                    String tempLocation = increaseLetter(locationArr[0]) + numberlocation;
+                    String tempLocation = decreaseLetter(lettersArr[i]) + numberlocation;
                     // check empty
 
                     if (whoIsAtLocationBackend(tempLocation).equals("")) {
@@ -443,7 +652,7 @@ public class board {
     }
 
     public void kingValidMoves(String name) {
-
+        pieces.get(name).validMoves.clear();
         char[] locationArr = pieces.get(name).location.toCharArray();
 
         int numberlocation = Integer.parseInt(Character.toString(locationArr[1]));
