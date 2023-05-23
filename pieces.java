@@ -65,9 +65,9 @@ class rook extends pieces {
 
 }
 
-class horse extends pieces {
+class knight extends pieces {
 
-    horse(String location, String name) {
+    knight(String location, String name) {
         this.location = location;
         this.name = name;
         // System.out.println("name: " + name);

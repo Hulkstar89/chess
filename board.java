@@ -3,22 +3,19 @@ package chess;
 import java.util.HashMap;
 import java.util.Scanner;
 
+import javax.xml.validation.Validator;
+
 public class board {
     /*
      * todo
      * pawn promote
-     * big piece capture
-     * King capture
-     * queen capture
-     * knight King capture
-     * rook King capture
-     * bishop King capture
      * try statements
      * if two are moving to the same position check for that
      * be able to import and export PGN
      * select a piece to see where it can move
      * see the piece as a symbol
      * color text?
+     * error handling
      */
     public HashMap<String, pieces> pieces = new HashMap<String, pieces>();
     private Scanner in = new Scanner(System.in);
@@ -70,32 +67,27 @@ public class board {
 
         // pawn capture
         if (userInput.length() == 4 && userInputArr[1] == 'x') {
-            for (int whatPawnIsMoving = 0; whatPawnIsMoving < lettersArr.length; whatPawnIsMoving++) {
-                if (userInputArr[0] == lettersArr[whatPawnIsMoving]) {
+            for (int whatPawn = 1; whatPawn <= 8; whatPawn++) {
+
+                if (pieces.get("white pawn - " + whatPawn).getLocation().substring(0, 1)
+                        .equals(userInput.subSequence(0, 1))) {
+
                     // now we know what pawn is capturing
                     System.out.println("pawn capture");
                     // so then we need to find the pawn in the hashmap
-                    int locationInHashmap;
-                    for (locationInHashmap = 1; locationInHashmap <= 8; locationInHashmap++) {
-                        // find the pawn in the hashmap
-                        if (pieces.get("white pawn - " + locationInHashmap).location.substring(0, 1)
-                                .equals(lettersArr[whatPawnIsMoving])) {
 
-                            pawnValidMoves("white pawn - " + locationInHashmap);
-                        }
-
-                    }
-
+                    pawnValidMoves("white pawn - " + whatPawn);
                     // matcch userinput to the pawns valid move
-                    for (int i = 0; i < 3; i++) {
+                    for (int i = 0; i < pieces.get("white pawn - " + whatPawn).validMoves.size(); i++) {
 
-                        if (pieces.get("white pawn - " + locationInHashmap).validMoves.get(i).equals(userInput)
-                                && !whoIsAtLocationBackend(userInput.substring(2)).equals("")) {
+                        if (pieces.get("white pawn - " + whatPawn).validMoves.get(i).equals(userInput)) {
+
                             removePiece();
-                            pieces.get("white pawn - " + locationInHashmap).setLocation(userInput.substring(2));
-                            pieces.get("white pawn - " + locationInHashmap).moreThenOnce = true;
-                        }
+                            pieces.get("white pawn - " + whatPawn).setLocation(userInput.substring(2));
+                            pieces.get("white pawn - " + whatPawn).moreThenOnce = true;
+                            break;
 
+                        }
                     }
 
                 }
@@ -107,9 +99,8 @@ public class board {
         if (userInput.length() == 3) {
             switch (userInputArr[0]) {
                 case 'K':
-                    System.out.println("king move");
                     // find valid move for piece
-                    kingValidMoves("white king");
+                    kingValidMove("white king");
                     // check if a valid move matches user input
                     for (int i = 0; i < 8; i++) {
                         try {
@@ -126,7 +117,6 @@ public class board {
 
                     break;
                 case 'Q':
-                    System.out.println("queen move");
                     // find valid move for piece
                     queenValidMove("white queen");
                     // check if a valid move matches user input
@@ -139,20 +129,19 @@ public class board {
                     }
                     break;
                 case 'N':
-                    System.out.println("knight move");
                     // find valid move for piece
-                    knightValidMove("white horse - 1");
-                    knightValidMove("white horse - 2");
+                    knightValidMove("white knight - 1");
+                    knightValidMove("white knight - 2");
 
                     // check if a valid move matches user input
 
                     for (int j = 1; j < 3; j++) {
                         try {
-                            for (int i = 0; i < pieces.get("white horse - " + j).validMoves.size(); i++) {
-                                if (pieces.get("white horse - " + j).validMoves.get(i)
+                            for (int i = 0; i < pieces.get("white knight - " + j).validMoves.size(); i++) {
+                                if (pieces.get("white knight - " + j).validMoves.get(i)
                                         .equals(userInput.substring(1))) {
                                     // move the piece
-                                    pieces.get("white horse - " + j).setLocation(userInput.substring(1));
+                                    pieces.get("white knight - " + j).setLocation(userInput.substring(1));
                                 }
                             }
                         } catch (Exception e) {
@@ -162,15 +151,13 @@ public class board {
                     }
                     break;
                 case 'B':
-                    System.out.println("bishop move");
                     // find valid move for piece
-                    for (int i = 0; i < lettersArr.length; i++) {
-                        try {
-                            bishopValidMove("white bishop - 1");
-                            bishopValidMove("white bishop - 2");
-                        } catch (Exception e) {
 
-                        }
+                    try {
+                        bishopValidMove("white bishop - 1");
+                        bishopValidMove("white bishop - 2");
+                    } catch (Exception e) {
+
                     }
 
                     // check if a valid move matches user input
@@ -191,7 +178,6 @@ public class board {
 
                     break;
                 case 'R':
-                    System.out.println("rook move");
                     // find valid move for piece
 
                     rookValidMove("white rook - 1");
@@ -221,41 +207,120 @@ public class board {
         if (userInput.length() == 4 && userInputArr[1] == 'x') {
             switch (userInputArr[0]) {
                 case 'K':
-                    System.out.println("king capture");
                     // find valid move for piece
-                    kingValidMoves("white king");
+                    kingValidMove("white king");
+
                     // check if a valid move matches user input
-                    // remove the captured piece
+                    for (int i = 0; i < 8; i++) {
+                        try {
+                            if (pieces.get("white king").validMoves.get(i).equals(userInput.substring(2))) {
+                                // remove the captured piece\
+                                removePiece();
+                                // move the piece
+                                pieces.get("white king").setLocation(userInput.substring(2));
+                                PGN += userInput;
+                                break;
+                            }
+                        } catch (Exception e) {
+
+                        }
+                    }
                     // move the piece
                     break;
                 case 'Q':
                     System.out.println("queen capture");
                     // find valid move for piece
+                    queenValidMove("white queen");
+
                     // check if a valid move matches user input
-                    // remove the captured piece
+                    for (int i = 0; i < pieces.get("white queen").validMoves.size(); i++) {
+                        try {
+                            if (pieces.get("white queen").validMoves.get(i).equals(userInput.substring(2))) {
+                                // remove the captured piece\
+                                removePiece();
+                                // move the piece
+                                pieces.get("white queen").setLocation(userInput.substring(2));
+                                PGN += userInput;
+                                break;
+                            }
+                        } catch (Exception e) {
+
+                        }
+                    }
                     // move the piece
                     break;
                 case 'N':
                     System.out.println("knight capture");
                     // find valid move for piece
+                    knightValidMove("white knight - 1");
+                    knightValidMove("white knight - 2");
+
                     // check if a valid move matches user input
-                    // remove the captured piece
-                    // move the piece
+
+                    for (int j = 1; j < 3; j++) {
+                        try {
+                            for (int i = 0; i < pieces.get("white knight - " + j).validMoves.size(); i++) {
+                                if (pieces.get("white knight - " + j).validMoves.get(i)
+                                        .equals(userInput.substring(2))) {
+                                    // move the piece
+                                    removePiece();
+                                    pieces.get("white knight - " + j).setLocation(userInput.substring(2));
+                                }
+                            }
+                        } catch (Exception e) {
+                            // TODO: handle exception
+                        }
+
+                    }
                     break;
                 case 'B':
                     System.out.println("bishop capture");
                     // find valid move for piece
+
+                    try {
+                        bishopValidMove("white bishop - 1");
+                        bishopValidMove("white bishop - 2");
+                    } catch (Exception e) {
+
+                    }
+
                     // check if a valid move matches user input
-                    // remove the captured piece
-                    // move the piece
+                    for (int j = 1; j < 3; j++) {
+                        try {
+                            for (int i = 0; i < pieces.get("white bishop - " + j).validMoves.size(); i++) {
+                                if (pieces.get("white bishop - " + j).validMoves.get(i)
+                                        .equals(userInput.substring(2))) {
+                                    removePiece();
+                                    // move the piece
+                                    pieces.get("white bishop - " + j).setLocation(userInput.substring(2));
+                                }
+                            }
+                        } catch (Exception e) {
+                            // TODO: handle exception
+                        }
+
+                    }
                     break;
                 case 'R':
                     System.out.println("its the rook");
-                    // witch rook
-                    // find valid move for piece
+
+                    rookValidMove("white rook - 1");
+                    rookValidMove("white rook - 2");
+
                     // check if a valid move matches user input
-                    // remove the captured piece
-                    // move the piece
+                    for (int i = 0; i < pieces.get("white rook - 1").validMoves.size(); i++) {
+                        if (pieces.get("white rook - 1").validMoves.get(i).equals(userInput.substring(2))) {
+                            // move the piece
+                            pieces.get("white rook - 1").setLocation(userInput.substring(2));
+                        }
+                    }
+                    for (int i = 0; i < pieces.get("white rook - 2").validMoves.size(); i++) {
+                        if (pieces.get("white rook - 2").validMoves.get(i).equals(userInput.substring(2))) {
+                            // move the piece
+                            pieces.get("white rook - 2").setLocation(userInput.substring(2));
+                        }
+                    }
+
                     break;
                 default:
                     break;
@@ -364,6 +429,15 @@ public class board {
 
             if (whoIsAtLocationBackend(tempLocation).equals("") && letterIsOnBoard) {
                 pieces.get(name).validMoves.add(tempLocation);
+            } // if someone is there and they are capturable
+            else if (whoIsAtLocationBackend(tempLocation).substring(0, 1).equals("2")
+                    && name.substring(0, 1).equals("w")) {
+                // they are black and we are white
+                pieces.get(name).validMoves.add(tempLocation);
+            } else if (whoIsAtLocationBackend(tempLocation).substring(0, 1).equals("1")
+                    && name.substring(0, 1).equals("b")) {
+                // they are white and we are black
+                pieces.get(name).validMoves.add(tempLocation);
             }
         }
     }// end of knightValidMoves
@@ -397,6 +471,21 @@ public class board {
             if (whoIsAtLocationBackend(tempLocation).equals("")) {
                 // add the temp location as a valid move
                 pieces.get(name).validMoves.add(tempLocation);
+            }
+
+            // if someone is there and they are capturable
+            else if (whoIsAtLocationBackend(tempLocation).substring(0, 1).equals("2")
+                    && name.substring(0, 1).equals("w")) {
+                // they are black and we are white
+                pieces.get(name).validMoves.add(tempLocation);
+                // someone is there and stop looking in this direction
+                break;
+            } else if (whoIsAtLocationBackend(tempLocation).substring(0, 1).equals("1")
+                    && name.substring(0, 1).equals("b")) {
+                // they are white and we are black
+                pieces.get(name).validMoves.add(tempLocation);
+                // someone is there and stop looking in this direction
+                break;
             } else {
                 // someone is there and stop looking in this direction
                 break;
@@ -420,6 +509,19 @@ public class board {
             if (whoIsAtLocationBackend(tempLocation).equals("")) {
                 // add the temp location as a valid move
                 pieces.get(name).validMoves.add(tempLocation);
+            } // if someone is there and they are capturable
+            else if (whoIsAtLocationBackend(tempLocation).substring(0, 1).equals("2")
+                    && name.substring(0, 1).equals("w")) {
+                // they are black and we are white
+                pieces.get(name).validMoves.add(tempLocation);
+                // someone is there and stop looking in this direction
+                break;
+            } else if (whoIsAtLocationBackend(tempLocation).substring(0, 1).equals("1")
+                    && name.substring(0, 1).equals("b")) {
+                // they are white and we are black
+                pieces.get(name).validMoves.add(tempLocation);
+                // someone is there and stop looking in this direction
+                break;
             } else {
                 // someone is there and stop looking in this direction
                 break;
@@ -444,6 +546,19 @@ public class board {
             if (whoIsAtLocationBackend(tempLocation).equals("")) {
                 // add the temp location as a valid move
                 pieces.get(name).validMoves.add(tempLocation);
+            } // if someone is there and they are capturable
+            else if (whoIsAtLocationBackend(tempLocation).substring(0, 1).equals("2")
+                    && name.substring(0, 1).equals("w")) {
+                // they are black and we are white
+                pieces.get(name).validMoves.add(tempLocation);
+                // someone is there and stop looking in this direction
+                break;
+            } else if (whoIsAtLocationBackend(tempLocation).substring(0, 1).equals("1")
+                    && name.substring(0, 1).equals("b")) {
+                // they are white and we are black
+                pieces.get(name).validMoves.add(tempLocation);
+                // someone is there and stop looking in this direction
+                break;
             } else {
                 // someone is there and stop looking in this direction
                 break;
@@ -468,6 +583,19 @@ public class board {
             if (whoIsAtLocationBackend(tempLocation).equals("")) {
                 // add the temp location as a valid move
                 pieces.get(name).validMoves.add(tempLocation);
+            } // if someone is there and they are capturable
+            else if (whoIsAtLocationBackend(tempLocation).substring(0, 1).equals("2")
+                    && name.substring(0, 1).equals("w")) {
+                // they are black and we are white
+                pieces.get(name).validMoves.add(tempLocation);
+                // someone is there and stop looking in this direction
+                break;
+            } else if (whoIsAtLocationBackend(tempLocation).substring(0, 1).equals("1")
+                    && name.substring(0, 1).equals("b")) {
+                // they are white and we are black
+                pieces.get(name).validMoves.add(tempLocation);
+                // someone is there and stop looking in this direction
+                break;
             } else {
                 // someone is there and stop looking in this direction
                 break;
@@ -489,8 +617,21 @@ public class board {
 
             if (whoIsAtLocationBackend(tempLocation).equals("")) {
                 pieces.get(name).validMoves.add(tempLocation);
+            } // if someone is there and they are capturable
+            else if (whoIsAtLocationBackend(tempLocation).substring(0, 1).equals("2")
+                    && name.substring(0, 1).equals("w")) {
+                // they are black and we are white
+                pieces.get(name).validMoves.add(tempLocation);
+                // someone is there and stop looking in this direction
+                break;
+            } else if (whoIsAtLocationBackend(tempLocation).substring(0, 1).equals("1")
+                    && name.substring(0, 1).equals("b")) {
+                // they are white and we are black
+                pieces.get(name).validMoves.add(tempLocation);
+                // someone is there and stop looking in this direction
+                break;
             } else {
-
+                // someone is there and stop looking in this direction
                 break;
             }
 
@@ -507,7 +648,21 @@ public class board {
             // ensure that the location is on the bou
             if (whoIsAtLocationBackend(tempLocation).equals("")) {
                 pieces.get(name).validMoves.add(tempLocation);
+            } // if someone is there and they are capturable
+            else if (whoIsAtLocationBackend(tempLocation).substring(0, 1).equals("2")
+                    && name.substring(0, 1).equals("w")) {
+                // they are black and we are white
+                pieces.get(name).validMoves.add(tempLocation);
+                // someone is there and stop looking in this direction
+                break;
+            } else if (whoIsAtLocationBackend(tempLocation).substring(0, 1).equals("1")
+                    && name.substring(0, 1).equals("b")) {
+                // they are white and we are black
+                pieces.get(name).validMoves.add(tempLocation);
+                // someone is there and stop looking in this direction
+                break;
             } else {
+                // someone is there and stop looking in this direction
                 break;
             }
 
@@ -524,7 +679,21 @@ public class board {
 
                     if (whoIsAtLocationBackend(tempLocation).equals("")) {
                         pieces.get(name).validMoves.add(tempLocation);
+                    } // if someone is there and they are capturable
+                    else if (whoIsAtLocationBackend(tempLocation).substring(0, 1).equals("2")
+                            && name.substring(0, 1).equals("w")) {
+                        // they are black and we are white
+                        pieces.get(name).validMoves.add(tempLocation);
+                        // someone is there and stop looking in this direction
+                        break;
+                    } else if (whoIsAtLocationBackend(tempLocation).substring(0, 1).equals("1")
+                            && name.substring(0, 1).equals("b")) {
+                        // they are white and we are black
+                        pieces.get(name).validMoves.add(tempLocation);
+                        // someone is there and stop looking in this direction
+                        break;
                     } else {
+                        // someone is there and stop looking in this direction
                         break;
                     }
 
@@ -542,7 +711,21 @@ public class board {
 
                     if (whoIsAtLocationBackend(tempLocation).equals("")) {
                         pieces.get(name).validMoves.add(tempLocation);
+                    } // if someone is there and they are capturable
+                    else if (whoIsAtLocationBackend(tempLocation).substring(0, 1).equals("2")
+                            && name.substring(0, 1).equals("w")) {
+                        // they are black and we are white
+                        pieces.get(name).validMoves.add(tempLocation);
+                        // someone is there and stop looking in this direction
+                        break;
+                    } else if (whoIsAtLocationBackend(tempLocation).substring(0, 1).equals("1")
+                            && name.substring(0, 1).equals("b")) {
+                        // they are white and we are black
+                        pieces.get(name).validMoves.add(tempLocation);
+                        // someone is there and stop looking in this direction
+                        break;
                     } else {
+                        // someone is there and stop looking in this direction
                         break;
                     }
 
@@ -580,6 +763,19 @@ public class board {
             if (whoIsAtLocationBackend(tempLocation).equals("")) {
                 // add the temp location as a valid move
                 pieces.get(name).validMoves.add(tempLocation);
+            } // if someone is there and they are capturable
+            else if (whoIsAtLocationBackend(tempLocation).substring(0, 1).equals("2")
+                    && name.substring(0, 1).equals("w")) {
+                // they are black and we are white
+                pieces.get(name).validMoves.add(tempLocation);
+                // someone is there and stop looking in this direction
+                break;
+            } else if (whoIsAtLocationBackend(tempLocation).substring(0, 1).equals("1")
+                    && name.substring(0, 1).equals("b")) {
+                // they are white and we are black
+                pieces.get(name).validMoves.add(tempLocation);
+                // someone is there and stop looking in this direction
+                break;
             } else {
                 // someone is there and stop looking in this direction
                 break;
@@ -603,6 +799,19 @@ public class board {
             if (whoIsAtLocationBackend(tempLocation).equals("")) {
                 // add the temp location as a valid move
                 pieces.get(name).validMoves.add(tempLocation);
+            } // if someone is there and they are capturable
+            else if (whoIsAtLocationBackend(tempLocation).substring(0, 1).equals("2")
+                    && name.substring(0, 1).equals("w")) {
+                // they are black and we are white
+                pieces.get(name).validMoves.add(tempLocation);
+                // someone is there and stop looking in this direction
+                break;
+            } else if (whoIsAtLocationBackend(tempLocation).substring(0, 1).equals("1")
+                    && name.substring(0, 1).equals("b")) {
+                // they are white and we are black
+                pieces.get(name).validMoves.add(tempLocation);
+                // someone is there and stop looking in this direction
+                break;
             } else {
                 // someone is there and stop looking in this direction
                 break;
@@ -627,6 +836,19 @@ public class board {
             if (whoIsAtLocationBackend(tempLocation).equals("")) {
                 // add the temp location as a valid move
                 pieces.get(name).validMoves.add(tempLocation);
+            } // if someone is there and they are capturable
+            else if (whoIsAtLocationBackend(tempLocation).substring(0, 1).equals("2")
+                    && name.substring(0, 1).equals("w")) {
+                // they are black and we are white
+                pieces.get(name).validMoves.add(tempLocation);
+                // someone is there and stop looking in this direction
+                break;
+            } else if (whoIsAtLocationBackend(tempLocation).substring(0, 1).equals("1")
+                    && name.substring(0, 1).equals("b")) {
+                // they are white and we are black
+                pieces.get(name).validMoves.add(tempLocation);
+                // someone is there and stop looking in this direction
+                break;
             } else {
                 // someone is there and stop looking in this direction
                 break;
@@ -651,6 +873,19 @@ public class board {
             if (whoIsAtLocationBackend(tempLocation).equals("")) {
                 // add the temp location as a valid move
                 pieces.get(name).validMoves.add(tempLocation);
+            } // if someone is there and they are capturable
+            else if (whoIsAtLocationBackend(tempLocation).substring(0, 1).equals("2")
+                    && name.substring(0, 1).equals("w")) {
+                // they are black and we are white
+                pieces.get(name).validMoves.add(tempLocation);
+                // someone is there and stop looking in this direction
+                break;
+            } else if (whoIsAtLocationBackend(tempLocation).substring(0, 1).equals("1")
+                    && name.substring(0, 1).equals("b")) {
+                // they are white and we are black
+                pieces.get(name).validMoves.add(tempLocation);
+                // someone is there and stop looking in this direction
+                break;
             } else {
                 // someone is there and stop looking in this direction
                 break;
@@ -679,8 +914,21 @@ public class board {
 
             if (whoIsAtLocationBackend(tempLocation).equals("")) {
                 pieces.get(name).validMoves.add(tempLocation);
+            } // if someone is there and they are capturable
+            else if (whoIsAtLocationBackend(tempLocation).substring(0, 1).equals("2")
+                    && name.substring(0, 1).equals("w")) {
+                // they are black and we are white
+                pieces.get(name).validMoves.add(tempLocation);
+                // someone is there and stop looking in this direction
+                break;
+            } else if (whoIsAtLocationBackend(tempLocation).substring(0, 1).equals("1")
+                    && name.substring(0, 1).equals("b")) {
+                // they are white and we are black
+                pieces.get(name).validMoves.add(tempLocation);
+                // someone is there and stop looking in this direction
+                break;
             } else {
-
+                // someone is there and stop looking in this direction
                 break;
             }
 
@@ -697,7 +945,21 @@ public class board {
             // ensure that the location is on the bou
             if (whoIsAtLocationBackend(tempLocation).equals("")) {
                 pieces.get(name).validMoves.add(tempLocation);
+            } // if someone is there and they are capturable
+            else if (whoIsAtLocationBackend(tempLocation).substring(0, 1).equals("2")
+                    && name.substring(0, 1).equals("w")) {
+                // they are black and we are white
+                pieces.get(name).validMoves.add(tempLocation);
+                // someone is there and stop looking in this direction
+                break;
+            } else if (whoIsAtLocationBackend(tempLocation).substring(0, 1).equals("1")
+                    && name.substring(0, 1).equals("b")) {
+                // they are white and we are black
+                pieces.get(name).validMoves.add(tempLocation);
+                // someone is there and stop looking in this direction
+                break;
             } else {
+                // someone is there and stop looking in this direction
                 break;
             }
 
@@ -714,7 +976,21 @@ public class board {
 
                     if (whoIsAtLocationBackend(tempLocation).equals("")) {
                         pieces.get(name).validMoves.add(tempLocation);
+                    } // if someone is there and they are capturable
+                    else if (whoIsAtLocationBackend(tempLocation).substring(0, 1).equals("2")
+                            && name.substring(0, 1).equals("w")) {
+                        // they are black and we are white
+                        pieces.get(name).validMoves.add(tempLocation);
+                        // someone is there and stop looking in this direction
+                        break;
+                    } else if (whoIsAtLocationBackend(tempLocation).substring(0, 1).equals("1")
+                            && name.substring(0, 1).equals("b")) {
+                        // they are white and we are black
+                        pieces.get(name).validMoves.add(tempLocation);
+                        // someone is there and stop looking in this direction
+                        break;
                     } else {
+                        // someone is there and stop looking in this direction
                         break;
                     }
 
@@ -732,7 +1008,21 @@ public class board {
 
                     if (whoIsAtLocationBackend(tempLocation).equals("")) {
                         pieces.get(name).validMoves.add(tempLocation);
+                    } // if someone is there and they are capturable
+                    else if (whoIsAtLocationBackend(tempLocation).substring(0, 1).equals("2")
+                            && name.substring(0, 1).equals("w")) {
+                        // they are black and we are white
+                        pieces.get(name).validMoves.add(tempLocation);
+                        // someone is there and stop looking in this direction
+                        break;
+                    } else if (whoIsAtLocationBackend(tempLocation).substring(0, 1).equals("1")
+                            && name.substring(0, 1).equals("b")) {
+                        // they are white and we are black
+                        pieces.get(name).validMoves.add(tempLocation);
+                        // someone is there and stop looking in this direction
+                        break;
                     } else {
+                        // someone is there and stop looking in this direction
                         break;
                     }
 
@@ -741,7 +1031,7 @@ public class board {
         }
     }
 
-    public void kingValidMoves(String name) {
+    public void kingValidMove(String name) {
         pieces.get(name).validMoves.clear();
         char[] locationArr = pieces.get(name).location.toCharArray();
 
@@ -786,14 +1076,21 @@ public class board {
                 if (whoIsAtLocationBackend(tempLocation).equals("")) {
                     // add valid locations
                     pieces.get(name).validMoves.add(tempLocation);
-                } else if (!whoIsAtLocationBackend(tempLocation).substring(0, 1)
-                        .equals(whoIsAtLocationBackend(pieces.get(name).location).substring(0, 1))) {
+                }
+                // if someone is there and they are capturable
+                else if (whoIsAtLocationBackend(tempLocation).substring(0, 1).equals("2")
+                        && name.substring(0, 1).equals("w")) {
+                    // they are black and we are white
+                    pieces.get(name).validMoves.add(tempLocation);
+                } else if (whoIsAtLocationBackend(tempLocation).substring(0, 1).equals("1")
+                        && name.substring(0, 1).equals("b")) {
+                    // they are white and we are black
                     pieces.get(name).validMoves.add(tempLocation);
                 }
 
             }
-        }
 
+        }
     }
 
     public void pawnValidMoves(String name) {
@@ -813,63 +1110,73 @@ public class board {
         String locationForMovingTwoForwardOnFirstMove = pieces.get(name).validMoves.get(0);
         String tempLocation = letterLocation + numberlocation;
 
-        // check to make sure that their is not already a piece there.
-        if (whoIsAtLocationBackend(tempLocation).equals("")) {
-
-            pieces.get(name).validMoves.clear();
-            if (!pieces.get(name).moreThenOnce) {
-                pieces.get(name).validMoves.add(locationForMovingTwoForwardOnFirstMove);
-
-            }
-            pieces.get(name).validMoves.add(tempLocation);
-
-        }
+       
         // check to see if the pawn can capture anything
 
         // capture right
-        String increaredLetter = increaseLetter(locationArr[0]);
-        String captureRight = letterLocation + "x" + increaredLetter + numberlocation;
-        if (!captureRight.equals("")) {
-            String captureRightCheckwho = whoIsAtLocationBackend(captureRight);
-            if (!captureRightCheckwho.equals("")) {
-                // if the pawn is white
-                if (pieces.get(name).name.substring(0, 1).equals("w")) {
-                    if (captureRightCheckwho.substring(0, 1).equals("2")) {
-                        pieces.get(name).validMoves.add(captureRight);
-                    }
-                }
-                // if the pawn is black
-                else if (pieces.get(name).name.substring(0, 1).equals("b")) {
-                    if (captureRightCheckwho.substring(0, 1).equals("1")) {
-                        pieces.get(name).validMoves.add(captureRight);
-                    }
-                }
 
+        String captureRight = letterLocation + "x" + increaseLetter(locationArr[0]) + numberlocation;
+        boolean checkCaptureRight = false;
+        String captureRightCheckwho = whoIsAtLocationBackend(captureRight.substring(2));
+        if (!captureRightCheckwho.equals("")) {
+            // if the pawn is white
+            if (pieces.get(name).name.substring(0, 1).equals("w")) {
+                if (captureRightCheckwho.substring(0, 1).equals("2")) {
+                    checkCaptureRight = true;
+
+                }
             }
+            // if the pawn is black
+            else if (pieces.get(name).name.substring(0, 1).equals("b")) {
+                if (captureRightCheckwho.substring(0, 1).equals("1")) {
+                    checkCaptureRight = true;
+
+                }
+            }
+
         }
 
-        String decreasedLetter = decreaseLetter(locationArr[0]);
-        String captureLeft = letterLocation + "x" + decreasedLetter + numberlocation;
-
-        if (!captureLeft.equals("")) {
-            String captureLeftCheckwho = whoIsAtLocationBackend(captureLeft);
-            if (!captureLeftCheckwho.equals("")) {
-                // if the pawn is white
-                if (pieces.get(name).name.substring(0, 1).equals("w")) {
-                    if (captureLeftCheckwho.substring(0, 1).equals("2")) {
-                        pieces.get(name).validMoves.add(captureLeft);
-                    }
+        
+        String captureLeft = letterLocation + "x" + decreaseLetter(locationArr[0]) + numberlocation;
+        boolean checkCaptureLeft = false;
+        String captureLeftCheckwho = whoIsAtLocationBackend(captureLeft.substring(2));
+        if (!captureLeftCheckwho.equals("")) {
+            // if the pawn is white
+            if (pieces.get(name).name.substring(0, 1).equals("w")) {
+                if (captureLeftCheckwho.substring(0, 1).equals("2")) {
+                    checkCaptureLeft = true;
+    
                 }
-                // if the pawn is black
-                else if (pieces.get(name).name.substring(0, 1).equals("b")) {
-                    if (captureLeftCheckwho.substring(0, 1).equals("1")) {
-                        pieces.get(name).validMoves.add(captureLeft);
-
-                    }
-                }
-
             }
+            // if the pawn is black
+            else if (pieces.get(name).name.substring(0, 1).equals("b")) {
+                if (captureLeftCheckwho.substring(0, 1).equals("1")) {
+                    checkCaptureLeft = true;
+    
+                }
+            }
+    
         }
+        pieces.get(name).validMoves.clear();
+        if (!pieces.get(name).moreThenOnce) {
+            pieces.get(name).validMoves.add(locationForMovingTwoForwardOnFirstMove);
+
+        }
+         // check to make sure that their is not already a piece there.
+         if (whoIsAtLocationBackend(tempLocation).equals("")) {
+
+            
+            pieces.get(name).validMoves.add(tempLocation);
+
+        }
+        if (checkCaptureLeft){
+            pieces.get(name).validMoves.add(captureLeft);
+        }
+        if (checkCaptureRight){
+            pieces.get(name).validMoves.add(captureRight);
+        }
+       
+      
     }
 
     public void removePiece() {
@@ -891,7 +1198,7 @@ public class board {
     private void createPieces() {
         createPawns();
         createRooks();
-        createHorse();
+        createKnight();
         createBishop();
         createQueen();
         createKing();
@@ -1055,21 +1362,21 @@ public class board {
 
         }
         try {
-            if (pieces.get("white horse - 1").location.equals(location)) {
+            if (pieces.get("white knight - 1").location.equals(location)) {
                 return "WN";
             }
         } catch (Exception e) {
 
         }
         try {
-            if (pieces.get("white horse - 2").location.equals(location)) {
+            if (pieces.get("white knight - 2").location.equals(location)) {
                 return "WN";
             }
         } catch (Exception e) {
 
         }
         try {
-            if (pieces.get("black horse - 1").location.equals(location)) {
+            if (pieces.get("black knight - 1").location.equals(location)) {
                 return "BN";
             }
         } catch (Exception e) {
@@ -1078,7 +1385,7 @@ public class board {
 
         try {
 
-            if (pieces.get("black horse - 2").location.equals(location)) {
+            if (pieces.get("black knight - 2").location.equals(location)) {
                 return "BN";
             }
         } catch (Exception e) {
@@ -1288,29 +1595,29 @@ public class board {
 
         }
         try {
-            if (pieces.get("white horse - 1").location.equals(location)) {
-                return "1white horse - 1";
+            if (pieces.get("white knight - 1").location.equals(location)) {
+                return "1white knight - 1";
             }
         } catch (Exception e) {
 
         }
         try {
-            if (pieces.get("white horse - 2").location.equals(location)) {
-                return "2white horse - 2";
+            if (pieces.get("white knight - 2").location.equals(location)) {
+                return "2white knight - 2";
             }
         } catch (Exception e) {
 
         }
         try {
-            if (pieces.get("black horse - 1").location.equals(location)) {
-                return "2black horse - 1";
+            if (pieces.get("black knight - 1").location.equals(location)) {
+                return "2black knight - 1";
             }
         } catch (Exception e) {
 
         }
         try {
-            if (pieces.get("black horse - 2").location.equals(location)) {
-                return "2black horse - 2";
+            if (pieces.get("black knight - 2").location.equals(location)) {
+                return "2black knight - 2";
             }
         } catch (Exception e) {
 
@@ -1445,11 +1752,11 @@ public class board {
 
     }
 
-    private void createHorse() {
-        pieces.put("white horse - 1", new horse("b1", "white horse"));
-        pieces.put("white horse - 2", new horse("g1", "white horse"));
-        pieces.put("black horse - 1", new horse("b8", "black horse"));
-        pieces.put("black horse - 2", new horse("g8", "black horse"));
+    private void createKnight() {
+        pieces.put("white knight - 1", new knight("b1", "white knight"));
+        pieces.put("white knight - 2", new knight("g1", "white knight"));
+        pieces.put("black knight - 1", new knight("b8", "black knight"));
+        pieces.put("black knight - 2", new knight("g8", "black knight"));
 
     }
 
@@ -1472,85 +1779,4 @@ public class board {
 
     }
 
-    {
-        // public void moveThePieceWhite() {
-        // for (int i = 0; i < 4; i++) {
-        // try {
-        // if (pieces.get("white pawn - 1").validMoves.get(i).equals(userInput)) {
-        // removePiece();
-        // pieces.get("white pawn - 1").setLocation(userInput);
-
-        // break;
-        // }
-        // } catch (Exception e) {
-
-        // }
-        // try {
-        // if (pieces.get("white pawn - 2").validMoves.get(i).equals(userInput)) {
-        // removePiece();
-        // pieces.get("white pawn - 2").setLocation(userInput);
-        // break;
-        // }
-        // } catch (Exception e) {
-
-        // }
-        // try {
-        // if (pieces.get("white pawn - 3").validMoves.get(i).equals(userInput)) {
-        // removePiece();
-        // pieces.get("white pawn - 3").setLocation(userInput);
-        // break;
-        // }
-        // } catch (Exception e) {
-
-        // }
-        // try {
-        // if (pieces.get("white pawn - 4").validMoves.get(i).equals(userInput)) {
-        // removePiece();
-        // pieces.get("white pawn - 4").setLocation(userInput);
-        // break;
-        // }
-        // } catch (Exception e) {
-
-        // }
-        // try {
-        // if (pieces.get("white pawn - 5").validMoves.get(i).equals(userInput)) {
-        // removePiece();
-        // pieces.get("white pawn - 5").setLocation(userInput);
-        // break;
-        // }
-        // } catch (Exception e) {
-
-        // }
-        // try {
-        // if (pieces.get("white pawn - 6").validMoves.get(i).equals(userInput)) {
-        // removePiece();
-        // pieces.get("white pawn - 6").setLocation(userInput);
-        // break;
-        // }
-        // } catch (Exception e) {
-
-        // }
-        // try {
-        // if (pieces.get("white pawn - 7").validMoves.get(i).equals(userInput)) {
-        // removePiece();
-        // pieces.get("white pawn - 7").setLocation(userInput);
-        // break;
-        // }
-        // } catch (Exception e) {
-
-        // }
-        // try {
-        // if (pieces.get("white pawn - 8").validMoves.get(i).equals(userInput)) {
-        // removePiece();
-        // pieces.get("white pawn - 8").setLocation(userInput);
-        // break;
-        // }
-        // } catch (Exception e) {
-
-        // }
-
-        // }
-
-        // }
-    }
 }
