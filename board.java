@@ -3,19 +3,15 @@ package chess;
 import java.util.HashMap;
 import java.util.Scanner;
 
-import javax.xml.validation.Validator;
-
 public class board {
     /*
      * todo
-     * pawn promote
-     * try statements
      * if two are moving to the same position check for that
-     * be able to import and export PGN
-     * select a piece to see where it can move
-     * see the piece as a symbol
-     * color text?
+     * pawn promote
      * error handling
+     * be able to import and export PGN
+     * color text?
+     * see the piece as a symbol
      */
     public HashMap<String, pieces> pieces = new HashMap<String, pieces>();
     private Scanner in = new Scanner(System.in);
@@ -24,24 +20,18 @@ public class board {
 
     public void moveWhite() {
 
-        AskUserForMoveByMove();
+        AskUserForMove();
 
         displayBoard();
 
     }
 
-    public void AskUserForMoveByMove() {
+    public void AskUserForMove() {
 
         userInput = in.nextLine();
-        whatPieceDoTheyWantToMoveWhite();
-
-    }
-
-    public void whatPieceDoTheyWantToMoveWhite() {
         char[] userInputArr = userInput.toCharArray();
         if (userInput.length() == 2) {
             // its a pawn move
-            System.out.println("pawn move");
             for (int j = 1; j <= 8; j++) {
                 try {
                     pawnValidMoves("white pawn - " + j);
@@ -63,33 +53,36 @@ public class board {
             }
 
         }
-        char[] lettersArr = { 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h' };
 
         // pawn capture
         if (userInput.length() == 4 && userInputArr[1] == 'x') {
             for (int whatPawn = 1; whatPawn <= 8; whatPawn++) {
+                try {
+                    if (pieces.get("white pawn - " + whatPawn).getLocation().substring(0, 1)
+                            .equals(userInput.subSequence(0, 1))) {
 
-                if (pieces.get("white pawn - " + whatPawn).getLocation().substring(0, 1)
-                        .equals(userInput.subSequence(0, 1))) {
+                        // now we know what pawn is capturing
 
-                    // now we know what pawn is capturing
-                    System.out.println("pawn capture");
-                    // so then we need to find the pawn in the hashmap
+                        // so then we need to find the pawn in the hashmap
 
-                    pawnValidMoves("white pawn - " + whatPawn);
-                    // matcch userinput to the pawns valid move
-                    for (int i = 0; i < pieces.get("white pawn - " + whatPawn).validMoves.size(); i++) {
+                        pawnValidMoves("white pawn - " + whatPawn);
+                        // matcch userinput to the pawns valid move
 
-                        if (pieces.get("white pawn - " + whatPawn).validMoves.get(i).equals(userInput)) {
+                        for (int i = 0; i < pieces.get("white pawn - " + whatPawn).validMoves.size(); i++) {
 
-                            removePiece();
-                            pieces.get("white pawn - " + whatPawn).setLocation(userInput.substring(2));
-                            pieces.get("white pawn - " + whatPawn).moreThenOnce = true;
-                            break;
+                            if (pieces.get("white pawn - " + whatPawn).validMoves.get(i).equals(userInput)) {
 
+                                removePiece();
+                                pieces.get("white pawn - " + whatPawn).setLocation(userInput.substring(2));
+                                pieces.get("white pawn - " + whatPawn).moreThenOnce = true;
+                                break;
+
+                            }
                         }
-                    }
 
+                    }
+                } catch (Exception e) {
+                    // TODO: handle exception
                 }
 
             }
@@ -120,13 +113,18 @@ public class board {
                     // find valid move for piece
                     queenValidMove("white queen");
                     // check if a valid move matches user input
-                    for (int i = 0; i < pieces.get("white queen").validMoves.size(); i++) {
-                        if (pieces.get("white queen").validMoves.get(i)
-                                .equals(userInput.substring(1))) {
-                            // move the piece
-                            pieces.get("white queen").setLocation(userInput.substring(1));
+                    try {
+                        for (int i = 0; i < pieces.get("white queen").validMoves.size(); i++) {
+                            if (pieces.get("white queen").validMoves.get(i)
+                                    .equals(userInput.substring(1))) {
+                                // move the piece
+                                pieces.get("white queen").setLocation(userInput.substring(1));
+                            }
                         }
+                    } catch (Exception e) {
+                        // TODO: handle exception
                     }
+
                     break;
                 case 'N':
                     // find valid move for piece
@@ -184,17 +182,25 @@ public class board {
                     rookValidMove("white rook - 2");
 
                     // check if a valid move matches user input
-                    for (int i = 0; i < pieces.get("white rook - 1").validMoves.size(); i++) {
-                        if (pieces.get("white rook - 1").validMoves.get(i).equals(userInput.substring(1))) {
-                            // move the piece
-                            pieces.get("white rook - 1").setLocation(userInput.substring(1));
+                    try {
+                        for (int i = 0; i < pieces.get("white rook - 1").validMoves.size(); i++) {
+                            if (pieces.get("white rook - 1").validMoves.get(i).equals(userInput.substring(1))) {
+                                // move the piece
+                                pieces.get("white rook - 1").setLocation(userInput.substring(1));
+                            }
                         }
+                    } catch (Exception e) {
+                        // TODO: handle exception
                     }
-                    for (int i = 0; i < pieces.get("white rook - 2").validMoves.size(); i++) {
-                        if (pieces.get("white rook - 2").validMoves.get(i).equals(userInput.substring(1))) {
-                            // move the piece
-                            pieces.get("white rook - 2").setLocation(userInput.substring(1));
+                    try {
+                        for (int i = 0; i < pieces.get("white rook - 2").validMoves.size(); i++) {
+                            if (pieces.get("white rook - 2").validMoves.get(i).equals(userInput.substring(1))) {
+                                // move the piece
+                                pieces.get("white rook - 2").setLocation(userInput.substring(1));
+                            }
                         }
+                    } catch (Exception e) {
+                        // TODO: handle exception
                     }
 
                     break;
@@ -228,7 +234,6 @@ public class board {
                     // move the piece
                     break;
                 case 'Q':
-                    System.out.println("queen capture");
                     // find valid move for piece
                     queenValidMove("white queen");
 
@@ -250,7 +255,6 @@ public class board {
                     // move the piece
                     break;
                 case 'N':
-                    System.out.println("knight capture");
                     // find valid move for piece
                     knightValidMove("white knight - 1");
                     knightValidMove("white knight - 2");
@@ -274,7 +278,6 @@ public class board {
                     }
                     break;
                 case 'B':
-                    System.out.println("bishop capture");
                     // find valid move for piece
 
                     try {
@@ -302,74 +305,190 @@ public class board {
                     }
                     break;
                 case 'R':
-                    System.out.println("its the rook");
 
                     rookValidMove("white rook - 1");
                     rookValidMove("white rook - 2");
 
                     // check if a valid move matches user input
-                    for (int i = 0; i < pieces.get("white rook - 1").validMoves.size(); i++) {
-                        if (pieces.get("white rook - 1").validMoves.get(i).equals(userInput.substring(2))) {
-                            // move the piece
-                            pieces.get("white rook - 1").setLocation(userInput.substring(2));
+                    try {
+                        for (int i = 0; i < pieces.get("white rook - 1").validMoves.size(); i++) {
+                            if (pieces.get("white rook - 1").validMoves.get(i).equals(userInput.substring(2))) {
+                                // move the piece
+                                pieces.get("white rook - 1").setLocation(userInput.substring(2));
+                            }
                         }
-                    }
-                    for (int i = 0; i < pieces.get("white rook - 2").validMoves.size(); i++) {
-                        if (pieces.get("white rook - 2").validMoves.get(i).equals(userInput.substring(2))) {
-                            // move the piece
-                            pieces.get("white rook - 2").setLocation(userInput.substring(2));
-                        }
+                    } catch (Exception e) {
+                        // TODO: handle exception
                     }
 
                     break;
                 default:
                     break;
             }
-            // if two pieces can move to the same location
-            /*
-             * if (userInput.length() == 4) {
-             * switch (userInputArr[0]) {
-             * case 'K':
-             * System.out.println("king capture");
-             * // find valid move for piece
-             * // check if a valid move matches user input
-             * // remove the captured piece
-             * // move the piece
-             * break;
-             * case 'Q':
-             * System.out.println("queen capture");
-             * // find valid move for piece
-             * // check if a valid move matches user input
-             * // remove the captured piece
-             * // move the piece
-             * break;
-             * case 'N':
-             * System.out.println("knight capture");
-             * // find valid move for piece
-             * // check if a valid move matches user input
-             * // remove the captured piece
-             * // move the piece
-             * break;
-             * case 'B':
-             * System.out.println("bishop capture");
-             * // find valid move for piece
-             * // check if a valid move matches user input
-             * // remove the captured piece
-             * // move the piece
-             * break;
-             * case 'R':
-             * System.out.println("its the rook");
-             * // witch rook
-             * // find valid move for piece
-             * // check if a valid move matches user input
-             * // remove the captured piece
-             * // move the piece
-             * break;
-             * default:
-             * break;
-             * }
-             */
+
         }
+
+        // if two pieces can move to the same location
+        if (userInput.length() == 4 && userInputArr[1] != 'x') {
+            switch (userInputArr[0]) {
+
+                case 'Q':
+                    // find the witch queen
+
+                    // find valid move for piece
+                    queenValidMove("white queen");
+
+                    // check if a valid move matches user input
+                    for (int i = 0; i < pieces.get("white queen").validMoves.size(); i++) {
+                        try {
+                            if (pieces.get("white queen").validMoves.get(i).equals(userInput.substring(2))) {
+                                // remove the captured piece\
+                                removePiece();
+                                // move the piece
+                                pieces.get("white queen").setLocation(userInput.substring(2));
+                                PGN += userInput;
+                                break;
+                            }
+                        } catch (Exception e) {
+
+                        }
+                    }
+                    // move the piece
+                    break;
+                case 'N':
+                    // find the witch knight
+                    String[] letterArr = { "a", "b", "c", "d", "e", "f", "g", "h" };
+                    int[] numberArr = { 1, 2,3,4,5,6,7,8 };
+                    Boolean done = false;
+                    // letter look
+                    for (int LetterLocation = 0; LetterLocation < letterArr.length&& !done; LetterLocation++) {
+                        if (userInput.substring(1, 2).equals(letterArr[LetterLocation])) {
+                            for (int i = 1; i < pieces.size()&& !done; i++) {
+                                try {
+                                    if (pieces.get("white knight - " + i).getLocation().substring(0, 1)
+                                        .equals(userInput.substring(1, 2))) {
+                                            knightValidMove("white knight - " + i);
+                                            for (int j = 1; j < 3; j++) {
+                                                try {
+                                                    for (int a = 0; a < pieces.get("white knight - " + j).validMoves.size()&& !done; a++) {
+                                                        if (pieces.get("white knight - " + j).validMoves.get(a)
+                                                                .equals(userInput.substring(2))) {
+                                                            // move the piece
+                                                           
+                                                            pieces.get("white knight - " + j).setLocation(userInput.substring(2));
+                                                            done = true;
+                                                        }
+                                                    }
+                                                } catch (Exception e) {
+                                                    // TODO: handle exception
+                                                }
+                        
+                                            }
+                                }
+                                } catch (Exception e) {
+                                    // TODO: handle exception
+                                }
+                                
+
+                            }
+                        }
+                    }
+                    // number look
+                    done = false;
+                    try {
+                        for (int numberLocation = 1; numberLocation < numberArr.length&& !done; numberLocation++) {
+                            if (Integer.parseInt(userInput.substring(1, 2)) == numberArr[numberLocation-1]) {
+                                for (int i = 1; i < pieces.size()&& !done; i++) {
+                                    try {
+                                        if (pieces.get("white knight - " + i).getLocation().substring(1, 2)
+                                            .equals(userInput.substring(1, 2))) {
+                                                knightValidMove("white knight - " + i);
+                                                for (int j = 1; j < 3; j++) {
+                                                    try {
+                                                        for (int a = 0; a < pieces.get("white knight - " + j).validMoves.size()&& !done; a++) {
+                                                            if (pieces.get("white knight - " + j).validMoves.get(a)
+                                                                    .equals(userInput.substring(2))) {
+                                                                // move the piece
+                                                               
+                                                                pieces.get("white knight - " + j).setLocation(userInput.substring(2));
+                                                                done = true;
+                                                                break;
+
+                                                            }
+                                                        }
+                                                    } catch (Exception e) {
+                                                        // TODO: handle exception
+                                                    }
+                                                 
+                                                }
+                                    }
+                                    } catch (Exception e) {
+                                        // TODO: handle exception
+                                    }
+                                    
+    
+                                }
+                            }
+                        }
+                    } catch (Exception e) {
+                        // TODO: handle exception
+                    }
+                    
+
+                    
+
+                   
+                    break;
+                case 'B':
+                    // find valid move for piece
+
+                    try {
+                        bishopValidMove("white bishop - 1");
+                        bishopValidMove("white bishop - 2");
+                    } catch (Exception e) {
+
+                    }
+
+                    // check if a valid move matches user input
+                    for (int j = 1; j < 3; j++) {
+                        try {
+                            for (int i = 0; i < pieces.get("white bishop - " + j).validMoves.size(); i++) {
+                                if (pieces.get("white bishop - " + j).validMoves.get(i)
+                                        .equals(userInput.substring(2))) {
+                                    removePiece();
+                                    // move the piece
+                                    pieces.get("white bishop - " + j).setLocation(userInput.substring(2));
+                                }
+                            }
+                        } catch (Exception e) {
+                            // TODO: handle exception
+                        }
+
+                    }
+                    break;
+                case 'R':
+
+                    rookValidMove("white rook - 1");
+                    rookValidMove("white rook - 2");
+
+                    // check if a valid move matches user input
+                    try {
+                        for (int i = 0; i < pieces.get("white rook - 1").validMoves.size(); i++) {
+                            if (pieces.get("white rook - 1").validMoves.get(i).equals(userInput.substring(2))) {
+                                // move the piece
+                                pieces.get("white rook - 1").setLocation(userInput.substring(2));
+                            }
+                        }
+                    } catch (Exception e) {
+                        // TODO: handle exception
+                    }
+
+                    break;
+                default:
+                    break;
+            }
+        }
+    // if two pieces can capture the same location
     }
 
     public void knightValidMove(String name) {
@@ -1110,7 +1229,6 @@ public class board {
         String locationForMovingTwoForwardOnFirstMove = pieces.get(name).validMoves.get(0);
         String tempLocation = letterLocation + numberlocation;
 
-       
         // check to see if the pawn can capture anything
 
         // capture right
@@ -1136,7 +1254,6 @@ public class board {
 
         }
 
-        
         String captureLeft = letterLocation + "x" + decreaseLetter(locationArr[0]) + numberlocation;
         boolean checkCaptureLeft = false;
         String captureLeftCheckwho = whoIsAtLocationBackend(captureLeft.substring(2));
@@ -1145,38 +1262,36 @@ public class board {
             if (pieces.get(name).name.substring(0, 1).equals("w")) {
                 if (captureLeftCheckwho.substring(0, 1).equals("2")) {
                     checkCaptureLeft = true;
-    
+
                 }
             }
             // if the pawn is black
             else if (pieces.get(name).name.substring(0, 1).equals("b")) {
                 if (captureLeftCheckwho.substring(0, 1).equals("1")) {
                     checkCaptureLeft = true;
-    
+
                 }
             }
-    
+
         }
         pieces.get(name).validMoves.clear();
         if (!pieces.get(name).moreThenOnce) {
             pieces.get(name).validMoves.add(locationForMovingTwoForwardOnFirstMove);
 
         }
-         // check to make sure that their is not already a piece there.
-         if (whoIsAtLocationBackend(tempLocation).equals("")) {
+        // check to make sure that their is not already a piece there.
+        if (whoIsAtLocationBackend(tempLocation).equals("")) {
 
-            
             pieces.get(name).validMoves.add(tempLocation);
 
         }
-        if (checkCaptureLeft){
+        if (checkCaptureLeft) {
             pieces.get(name).validMoves.add(captureLeft);
         }
-        if (checkCaptureRight){
+        if (checkCaptureRight) {
             pieces.get(name).validMoves.add(captureRight);
         }
-       
-      
+
     }
 
     public void removePiece() {
