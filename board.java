@@ -4,6 +4,22 @@ import java.util.HashMap;
 import java.util.Scanner;
 
 public class board {
+    /*
+     * todo
+     * pawn promote
+     * big piece capture
+     * King capture
+     * queen capture
+     * knight King capture
+     * rook King capture
+     * bishop King capture
+     * try statements
+     * if two are moving to the same position check for that
+     * be able to import and export PGN
+     * select a piece to see where it can move
+     * see the piece as a symbol
+     * color text?
+     */
     public HashMap<String, pieces> pieces = new HashMap<String, pieces>();
     private Scanner in = new Scanner(System.in);
     private String userInput;
@@ -125,8 +141,25 @@ public class board {
                 case 'N':
                     System.out.println("knight move");
                     // find valid move for piece
+                    knightValidMove("white horse - 1");
+                    knightValidMove("white horse - 2");
+
                     // check if a valid move matches user input
-                    // move the piece
+
+                    for (int j = 1; j < 3; j++) {
+                        try {
+                            for (int i = 0; i < pieces.get("white horse - " + j).validMoves.size(); i++) {
+                                if (pieces.get("white horse - " + j).validMoves.get(i)
+                                        .equals(userInput.substring(1))) {
+                                    // move the piece
+                                    pieces.get("white horse - " + j).setLocation(userInput.substring(1));
+                                }
+                            }
+                        } catch (Exception e) {
+                            // TODO: handle exception
+                        }
+
+                    }
                     break;
                 case 'B':
                     System.out.println("bishop move");
@@ -190,6 +223,7 @@ public class board {
                 case 'K':
                     System.out.println("king capture");
                     // find valid move for piece
+                    kingValidMoves("white king");
                     // check if a valid move matches user input
                     // remove the captured piece
                     // move the piece
@@ -273,7 +307,68 @@ public class board {
         }
     }
 
-    private void queenValidMove(String name) {
+    public void knightValidMove(String name) {
+        pieces.get(name).validMoves.clear();
+        char[] locationArr = pieces.get(name).location.toCharArray();
+        int numberLocation = Integer.parseInt(Character.toString(locationArr[1]));
+
+        String[] tempLetterLocationArr = new String[8];
+        int[] tempNumberLocationArr = new int[8];
+        String[] letterArr = { "a", "b", "c", "d", "e", "f", "g", "h" };
+        char[] decreasedLetter = decreaseLetter(locationArr[0]).toCharArray();
+        char[] increasedLetter = increaseLetter(locationArr[0]).toCharArray();
+        // number +2
+        tempNumberLocationArr[0] = numberLocation + 2;
+        // letter +1
+        tempLetterLocationArr[0] = increaseLetter(locationArr[0]);
+
+        // number +2 letter -1
+        tempNumberLocationArr[1] = numberLocation + 2;
+        tempLetterLocationArr[1] = decreaseLetter(locationArr[0]);
+
+        // number -2 letter +1
+        tempNumberLocationArr[2] = numberLocation - 2;
+        tempLetterLocationArr[2] = increaseLetter(locationArr[0]);
+        // number -2 letter -1
+        tempNumberLocationArr[3] = numberLocation - 2;
+        tempLetterLocationArr[3] = decreaseLetter(locationArr[0]);
+
+        // number +1 letter +2
+        tempNumberLocationArr[4] = numberLocation + 1;
+        tempLetterLocationArr[4] = increaseLetter(increasedLetter[0]);
+        // number -1 letter +2
+        tempNumberLocationArr[5] = numberLocation - 1;
+        tempLetterLocationArr[5] = increaseLetter(increasedLetter[0]);
+
+        // number +1 letter -2
+        tempNumberLocationArr[6] = numberLocation + 1;
+        tempLetterLocationArr[6] = decreaseLetter(decreasedLetter[0]);
+
+        // number -1 letter -2
+        tempNumberLocationArr[7] = numberLocation - 1;
+        tempLetterLocationArr[7] = decreaseLetter(decreasedLetter[0]);
+
+        boolean letterIsOnBoard = false;
+        for (int i = 0; i < 8; i++) {
+            String tempLocation = tempLetterLocationArr[i] + tempNumberLocationArr[i];
+            // check if location is empty
+            if (tempNumberLocationArr[i] < 1 || tempNumberLocationArr[i] > 8) {
+                continue;
+            }
+            for (int j = 0; j < 8; j++) {
+                if (letterArr[j].equals(tempLetterLocationArr[i])) {
+                    letterIsOnBoard = true;
+                    break;
+                }
+            }
+
+            if (whoIsAtLocationBackend(tempLocation).equals("") && letterIsOnBoard) {
+                pieces.get(name).validMoves.add(tempLocation);
+            }
+        }
+    }// end of knightValidMoves
+
+    public void queenValidMove(String name) {
         pieces.get(name).validMoves.clear();
         char[] locationArr = pieces.get(name).location.toCharArray();
         char[] lettersArr = { 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h' };
@@ -380,16 +475,11 @@ public class board {
 
         }
 
-
-
-
-
-
         String letterLocation = Character.toString(locationArr[0]);
 
-         // up
+        // up
 
-         for (int i = numberlocation; i <= 8; i++) {
+        for (int i = numberlocation; i <= 8; i++) {
 
             // make sure locaiton in empty
             String tempLocation = letterLocation + i;
@@ -400,7 +490,7 @@ public class board {
             if (whoIsAtLocationBackend(tempLocation).equals("")) {
                 pieces.get(name).validMoves.add(tempLocation);
             } else {
-                
+
                 break;
             }
 
@@ -414,7 +504,7 @@ public class board {
             if (tempLocation.equals(pieces.get(name).location)) {
                 continue;
             }
-            //ensure that the location is on the bou
+            // ensure that the location is on the bou
             if (whoIsAtLocationBackend(tempLocation).equals("")) {
                 pieces.get(name).validMoves.add(tempLocation);
             } else {
@@ -424,11 +514,11 @@ public class board {
         }
 
         // right
-       
+
         for (int letterLocationInt = 0; letterLocationInt < 8; letterLocationInt++) {
             if (locationArr[0] == lettersArr[letterLocationInt]) {
                 for (int i = letterLocationInt; i <= 7; i++) {
-                    
+
                     String tempLocation = increaseLetter(lettersArr[i]) + numberlocation;
                     // check empty
 
@@ -437,7 +527,7 @@ public class board {
                     } else {
                         break;
                     }
-                    
+
                 }
             }
         }
@@ -461,7 +551,7 @@ public class board {
         }
     }
 
-    private void bishopValidMove(String name) {
+    public void bishopValidMove(String name) {
         pieces.get(name).validMoves.clear();
         char[] locationArr = pieces.get(name).location.toCharArray();
         char[] lettersArr = { 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h' };
@@ -570,7 +660,7 @@ public class board {
 
     }
 
-    private void rookValidMove(String name) {
+    public void rookValidMove(String name) {
         pieces.get(name).validMoves.clear();
         char[] locationArr = pieces.get(name).location.toCharArray();
 
@@ -590,7 +680,7 @@ public class board {
             if (whoIsAtLocationBackend(tempLocation).equals("")) {
                 pieces.get(name).validMoves.add(tempLocation);
             } else {
-                
+
                 break;
             }
 
@@ -604,7 +694,7 @@ public class board {
             if (tempLocation.equals(pieces.get(name).location)) {
                 continue;
             }
-            //ensure that the location is on the bou
+            // ensure that the location is on the bou
             if (whoIsAtLocationBackend(tempLocation).equals("")) {
                 pieces.get(name).validMoves.add(tempLocation);
             } else {
@@ -618,7 +708,7 @@ public class board {
         for (int letterLocationInt = 0; letterLocationInt < 8; letterLocationInt++) {
             if (locationArr[0] == lettersArr[letterLocationInt]) {
                 for (int i = letterLocationInt; i <= 7; i++) {
-                    
+
                     String tempLocation = increaseLetter(lettersArr[i]) + numberlocation;
                     // check empty
 
@@ -627,7 +717,7 @@ public class board {
                     } else {
                         break;
                     }
-                    
+
                 }
             }
         }
@@ -966,21 +1056,21 @@ public class board {
         }
         try {
             if (pieces.get("white horse - 1").location.equals(location)) {
-                return "WH";
+                return "WN";
             }
         } catch (Exception e) {
 
         }
         try {
             if (pieces.get("white horse - 2").location.equals(location)) {
-                return "WH";
+                return "WN";
             }
         } catch (Exception e) {
 
         }
         try {
             if (pieces.get("black horse - 1").location.equals(location)) {
-                return "BH";
+                return "BN";
             }
         } catch (Exception e) {
 
@@ -989,7 +1079,7 @@ public class board {
         try {
 
             if (pieces.get("black horse - 2").location.equals(location)) {
-                return "BH";
+                return "BN";
             }
         } catch (Exception e) {
 
