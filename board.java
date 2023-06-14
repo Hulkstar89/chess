@@ -6,38 +6,23 @@ import java.util.Scanner;
 public class board {
     /*
      * todo
-     * if two are captuing to the same position check for that
-     * if more than two are moving to the same position check for that
-     * if more than two are captuing to the same position check for that
      * 
-     *  
+     * 
      * bugs
-     * 
-     * error handling
+     *
      * black move
-     * checks for check and mate on king
      * be able to import and export PGN
+     * checks for check and mate on king
+     * error handling
      * color text?
      * see the piece as a symbol
      */
     public HashMap<String, pieces> pieces = new HashMap<String, pieces>();
+    public HashMap<String, Integer> numberOfEachPiece = new HashMap<String, Integer>();
+    String[] whiteAndBlack = { "white", "black" };
     private Scanner in = new Scanner(System.in);
     private String userInput;
     public String PGN = "";
-    private Integer numberOfWhitePawns = 8;
-    private Integer numberOfBlackPawns = 8;
-
-    private Integer numberOfWhiteRooks = 2;
-    private Integer numberOfBlackRooks = 2;
-
-    private Integer numberOfWhiteKnights = 2;
-    private Integer numberOfBlackKnights = 2;
-
-    private Integer numberOfWhiteBishops = 2;
-    private Integer numberOfBlackBishops = 2;
-
-    private Integer numberOfWhiteQueens = 1;
-    private Integer numberOfBlackQueens = 1;
 
     public void moveByMove(String whiteOrBlack) {
 
@@ -48,7 +33,7 @@ public class board {
         Boolean done = false;
         // its a pawn move
         if (userInput.length() == 2) {
-            for (int j = 1; j <= numberOfWhitePawns; j++) {
+            for (int j = 1; j <= numberOfEachPiece.get("whitePawns"); j++) {
                 try {
                     pawnValidMoves("white pawn - " + j);
                 } catch (Exception e) {
@@ -56,7 +41,7 @@ public class board {
                 }
 
             }
-            for (int j = 1; j <= numberOfWhitePawns; j++) {
+            for (int j = 1; j <= numberOfEachPiece.get("whitePawns"); j++) {
                 try {
                     if (pieces.get("white pawn - " + j).validMoves.contains(userInput)) {
                         pieces.get("white pawn - " + j).setLocation(userInput);
@@ -82,14 +67,14 @@ public class board {
                         // so then we need to find the pawn in the hashmap
 
                         pawnValidMoves("white pawn - " + whatPawn);
-                        // matcch userinput to the pawns valid move
+                        // match user input to the pawns valid move
 
                         for (int i = 0; i < pieces.get("white pawn - " + whatPawn).validMoves.size(); i++) {
 
                             if (pieces.get("white pawn - " + whatPawn).validMoves.get(i)
                                     .equals(userInput.substring(2))) {
 
-                                removePiece();
+                                removePiece(userInput.substring(2));
                                 pieces.get("white pawn - " + whatPawn).setLocation(userInput.substring(2));
                                 pieces.get("white pawn - " + whatPawn).moreThenOnce = true;
                                 break;
@@ -99,7 +84,7 @@ public class board {
 
                     }
                 } catch (Exception e) {
-                    // TODO: handle exception
+
                 }
 
             }
@@ -118,14 +103,14 @@ public class board {
                         // so then we need to find the pawn in the hashmap
 
                         pawnValidMoves("white pawn - " + whatPawn);
-                        // matcch userinput to the pawns valid move
+                        // match user input to the pawns valid move
 
                         for (int i = 0; i < pieces.get("white pawn - " + whatPawn).validMoves.size(); i++) {
 
                             if (pieces.get("white pawn - " + whatPawn).validMoves.get(i)
                                     .equals(userInput.substring(0, 2))) {
 
-                                pawnPremote("white pawn - " + whatPawn, true);
+                                pawnPromote("white pawn - " + whatPawn, true);
 
                                 break;
 
@@ -134,13 +119,13 @@ public class board {
 
                     }
                 } catch (Exception e) {
-                    // TODO: handle exception
+
                 }
 
             }
         }
 
-        // pawn premote with capture
+        // pawn promote with capture
         if (userInput.length() == 6 && userInputArr[4] == '=') {
             for (int whatPawn = 1; whatPawn <= 8; whatPawn++) {
                 try {
@@ -152,14 +137,14 @@ public class board {
                         // so then we need to find the pawn in the hashmap
 
                         pawnValidMoves("white pawn - " + whatPawn);
-                        // matcch userinput to the pawns valid move
+                        // match user input to the pawns valid move
 
                         for (int i = 0; i < pieces.get("white pawn - " + whatPawn).validMoves.size(); i++) {
 
                             if (pieces.get("white pawn - " + whatPawn).validMoves.get(i)
                                     .equals(userInput.substring(2, 4))) {
-                                removePiece();
-                                pawnPremote("white pawn - " + whatPawn, false);
+                                removePiece(userInput.substring(2, 4));
+                                pawnPromote("white pawn - " + whatPawn, false);
 
                                 break;
 
@@ -168,13 +153,13 @@ public class board {
 
                     }
                 } catch (Exception e) {
-                    // TODO: handle exception
+
                 }
 
             }
         }
 
-        // big peice move
+        // big piece move
         if (userInput.length() == 3) {
             switch (userInputArr[0]) {
                 case 'K':
@@ -197,12 +182,12 @@ public class board {
                     break;
                 case 'Q':
                     // find valid move for piece
-                    for (int whatQueen = 1; whatQueen <= numberOfWhiteQueens; whatQueen++) {
+                    for (int whatQueen = 1; whatQueen <= numberOfEachPiece.get("whiteQueens"); whatQueen++) {
 
                         queenValidMove("white queen - " + whatQueen);
                     }
                     // check if a valid move matches user input
-                    for (int whatQueen = 1; whatQueen <= numberOfWhiteQueens; whatQueen++) {
+                    for (int whatQueen = 1; whatQueen <= numberOfEachPiece.get("whiteQueens"); whatQueen++) {
                         try {
                             for (int validMove = 0; validMove < pieces.get("white queen - " + whatQueen).validMoves
                                     .size(); validMove++) {
@@ -213,20 +198,20 @@ public class board {
                                 }
                             }
                         } catch (Exception e) {
-                            // TODO: handle exception
+
                         }
                     }
 
                     break;
                 case 'N':
                     // find valid move for piece
-                    for (int i = 1; i <= numberOfWhiteKnights; i++) {
-                        knightValidMove("white knight - " + i);
+                    for (int whatKnight = 1; whatKnight <= numberOfEachPiece.get("whiteKnights"); whatKnight++) {
+                        knightValidMove("white knight - " + whatKnight);
                     }
 
                     // check if a valid move matches user input
 
-                    for (int j = 1; j <= numberOfWhiteKnights; j++) {
+                    for (int j = 1; j <= numberOfEachPiece.get("whiteKnights"); j++) {
                         try {
                             for (int i = 0; i < pieces.get("white knight - " + j).validMoves.size(); i++) {
                                 if (pieces.get("white knight - " + j).validMoves.get(i)
@@ -236,14 +221,14 @@ public class board {
                                 }
                             }
                         } catch (Exception e) {
-                            // TODO: handle exception
+
                         }
 
                     }
                     break;
                 case 'B':
                     // find valid move for piece
-                    for (int i = 1; i <= numberOfWhiteBishops; i++) {
+                    for (int i = 1; i <= numberOfEachPiece.get("whiteBishops"); i++) {
                         try {
                             bishopValidMove("white bishop - " + i);
 
@@ -253,7 +238,7 @@ public class board {
                     }
 
                     // check if a valid move matches user input
-                    for (int whatBishop = 1; whatBishop <= numberOfWhiteBishops; whatBishop++) {
+                    for (int whatBishop = 1; whatBishop <= numberOfEachPiece.get("whiteBishops"); whatBishop++) {
                         try {
                             for (int i = 0; i < pieces.get("white bishop - " + whatBishop).validMoves.size(); i++) {
                                 if (pieces.get("white bishop - " + whatBishop).validMoves.get(i)
@@ -263,7 +248,7 @@ public class board {
                                 }
                             }
                         } catch (Exception e) {
-                            // TODO: handle exception
+
                         }
 
                     }
@@ -275,12 +260,12 @@ public class board {
                         try {
                             rookValidMove("white rook - " + i);
                         } catch (Exception e) {
-                            // TODO: handle exception
+
                         }
                     }
 
                     // check if a valid move matches user input
-                    for (int i = 1; i <= numberOfWhiteRooks; i++) {
+                    for (int i = 1; i <= numberOfEachPiece.get("whiteRooks"); i++) {
                         try {
                             for (int k = 0; k < pieces.get("white rook - " + i).validMoves.size(); k++) {
                                 if (pieces.get("white rook - " + i).validMoves.get(k).equals(userInput.substring(1))) {
@@ -289,7 +274,7 @@ public class board {
                                 }
                             }
                         } catch (Exception e) {
-                            // TODO: handle exception
+
                         }
                     }
 
@@ -311,7 +296,7 @@ public class board {
                         try {
                             if (pieces.get("white king").validMoves.get(i).equals(userInput.substring(2))) {
                                 // remove the captured piece\
-                                removePiece();
+                                removePiece(userInput.substring(2));
                                 // move the piece
                                 pieces.get("white king").setLocation(userInput.substring(2));
                                 PGN += userInput;
@@ -325,7 +310,7 @@ public class board {
                     break;
                 case 'Q':
                     // find valid move for piece
-                    for (int i = 1; i <= numberOfWhiteQueens; i++) {
+                    for (int i = 1; i <= numberOfEachPiece.get("whiteQueens"); i++) {
 
                         queenValidMove("white queen - " + i);
                     }
@@ -340,7 +325,7 @@ public class board {
                                     if (pieces.get("white queen - " + whatQueen).validMoves.get(whatValidMove)
                                             .equals(userInput.substring(2))) {
                                         // remove the captured piece\
-                                        removePiece();
+                                        removePiece(userInput.substring(2));
                                         // move the piece
                                         pieces.get("white queen - " + whatQueen).setLocation(userInput.substring(2));
 
@@ -351,7 +336,7 @@ public class board {
                                 }
                             }
                         } catch (Exception e) {
-                            // TODO: handle exception
+
                         }
 
                     }
@@ -359,31 +344,31 @@ public class board {
                     break;
                 case 'N':
                     // find valid move for piece
-                    for (int whatKnight = 1; whatKnight <= numberOfWhiteKnights; whatKnight++) {
+                    for (int whatKnight = 1; whatKnight <= numberOfEachPiece.get("whiteKnights"); whatKnight++) {
                         knightValidMove("white knight - " + whatKnight);
                     }
 
                     // check if a valid move matches user input
 
-                    for (int whatKnight = 1; whatKnight <= numberOfWhiteKnights; whatKnight++) {
+                    for (int whatKnight = 1; whatKnight <= numberOfEachPiece.get("whiteKnights"); whatKnight++) {
                         try {
                             for (int i = 0; i < pieces.get("white knight - " + whatKnight).validMoves.size(); i++) {
                                 if (pieces.get("white knight - " + whatKnight).validMoves.get(i)
                                         .equals(userInput.substring(2))) {
                                     // move the piece
-                                    removePiece();
+                                    removePiece(userInput.substring(2));
                                     pieces.get("white knight - " + whatKnight).setLocation(userInput.substring(2));
                                 }
                             }
                         } catch (Exception e) {
-                            // TODO: handle exception
+
                         }
 
                     }
                     break;
                 case 'B':
                     // find valid move for piece
-                    for (int whatBishop = 1; whatBishop <= numberOfWhiteBishops; whatBishop++) {
+                    for (int whatBishop = 1; whatBishop <= numberOfEachPiece.get("whiteBishops"); whatBishop++) {
                         try {
                             bishopValidMove("white bishop - " + whatBishop);
 
@@ -393,46 +378,46 @@ public class board {
                     }
 
                     // check if a valid move matches user input
-                    for (int whatBishop = 1; whatBishop <= numberOfWhiteBishops; whatBishop++) {
+                    for (int whatBishop = 1; whatBishop <= numberOfEachPiece.get("whiteBishops"); whatBishop++) {
                         try {
                             for (int validMove = 0; validMove < pieces.get("white bishop - " + whatBishop).validMoves
                                     .size(); validMove++) {
                                 if (pieces.get("white bishop - " + whatBishop).validMoves.get(validMove)
                                         .equals(userInput.substring(2))) {
-                                    removePiece();
+                                    removePiece(userInput.substring(2));
                                     // move the piece
                                     pieces.get("white bishop - " + whatBishop).setLocation(userInput.substring(2));
                                 }
                             }
                         } catch (Exception e) {
-                            // TODO: handle exception
+
                         }
 
                     }
                     break;
                 case 'R':
-                    for (int whatRook = 1; whatRook <= numberOfWhiteRooks; whatRook++) {
+                    for (int whatRook = 1; whatRook <= numberOfEachPiece.get("whiteRooks"); whatRook++) {
 
                         try {
                             rookValidMove("white rook - " + whatRook);
                         } catch (Exception e) {
-                            // TODO: handle exception
+
                         }
                     }
 
-                    for (int whatRook = 1; whatRook <= numberOfWhiteRooks; whatRook++) {
+                    for (int whatRook = 1; whatRook <= numberOfEachPiece.get("whiteRooks"); whatRook++) {
                         // check if a valid move matches user input
                         try {
                             for (int i = 0; i < pieces.get("white rook - " + whatRook).validMoves.size(); i++) {
                                 if (pieces.get("white rook - " + whatRook).validMoves.get(i)
                                         .equals(userInput.substring(2))) {
                                     // move the piece
-                                    removePiece();
+                                    removePiece(userInput.substring(2));
                                     pieces.get("white rook - " + whatRook).setLocation(userInput.substring(2));
                                 }
                             }
                         } catch (Exception e) {
-                            // TODO: handle exception
+
                         }
                     }
 
@@ -452,7 +437,8 @@ public class board {
                     // letter look
                     for (int LetterLocation = 0; LetterLocation < letterArr.length && !done; LetterLocation++) {
                         if (userInput.substring(1, 2).equals(letterArr[LetterLocation])) {
-                            for (int whatQueen = 1; whatQueen <= numberOfWhiteQueens && !done; whatQueen++) {
+                            for (int whatQueen = 1; whatQueen <= numberOfEachPiece.get("whiteQueens")
+                                    && !done; whatQueen++) {
                                 try {
                                     if (pieces.get("white queen - " + whatQueen).getLocation().substring(0, 1)
                                             .equals(userInput.substring(1, 2))) {
@@ -472,12 +458,12 @@ public class board {
                                                 }
                                             }
                                         } catch (Exception e) {
-                                            // TODO: handle exception
+
                                         }
 
                                     }
                                 } catch (Exception e) {
-                                    // TODO: handle exception
+
                                 }
 
                             }
@@ -487,8 +473,9 @@ public class board {
                     done = false;
                     try {
                         for (int numberLocation = 1; numberLocation < numberArr.length && !done; numberLocation++) {
-                            if (Integer.parseInt(userInput.substring(1, 2)) == numberArr[numberLocation - 1]) {
-                                for (int whatQueen = 1; whatQueen <= numberOfWhiteQueens && !done; whatQueen++) {
+                            if (Integer.parseInt(userInput.substring(1, 2)) == numberArr[numberLocation]) {
+                                for (int whatQueen = 1; whatQueen <= numberOfEachPiece.get("whiteQueens")
+                                        && !done; whatQueen++) {
                                     try {
                                         if (pieces.get("white queen - " + whatQueen).getLocation().substring(1, 2)
                                                 .equals(userInput.substring(1, 2))) {
@@ -510,19 +497,19 @@ public class board {
                                                     }
                                                 }
                                             } catch (Exception e) {
-                                                // TODO: handle exception
+
                                             }
 
                                         }
                                     } catch (Exception e) {
-                                        // TODO: handle exception
+
                                     }
 
                                 }
                             }
                         }
                     } catch (Exception e) {
-                        // TODO: handle exception
+
                     }
                     break;
                 case 'N':
@@ -531,7 +518,8 @@ public class board {
                     // letter look
                     for (int LetterLocation = 0; LetterLocation < letterArr.length && !done; LetterLocation++) {
                         if (userInput.substring(1, 2).equals(letterArr[LetterLocation])) {
-                            for (int whatKnight = 1; whatKnight <= numberOfWhiteKnights && !done; whatKnight++) {
+                            for (int whatKnight = 1; whatKnight <= numberOfEachPiece.get("whiteKnights")
+                                    && !done; whatKnight++) {
                                 try {
                                     if (pieces.get("white knight - " + whatKnight).getLocation().substring(0, 1)
                                             .equals(userInput.substring(1, 2))) {
@@ -551,12 +539,12 @@ public class board {
                                                 }
                                             }
                                         } catch (Exception e) {
-                                            // TODO: handle exception
+
                                         }
 
                                     }
                                 } catch (Exception e) {
-                                    // TODO: handle exception
+
                                 }
 
                             }
@@ -567,7 +555,8 @@ public class board {
                     try {
                         for (int numberLocation = 1; numberLocation < numberArr.length && !done; numberLocation++) {
                             if (Integer.parseInt(userInput.substring(1, 2)) == numberArr[numberLocation - 1]) {
-                                for (int whatKnight = 1; whatKnight <= numberOfWhiteKnights && !done; whatKnight++) {
+                                for (int whatKnight = 1; whatKnight <= numberOfEachPiece.get("whiteKnights")
+                                        && !done; whatKnight++) {
                                     try {
                                         if (pieces.get("white knight - " + whatKnight).getLocation().substring(1, 2)
                                                 .equals(userInput.substring(1, 2))) {
@@ -589,19 +578,19 @@ public class board {
                                                     }
                                                 }
                                             } catch (Exception e) {
-                                                // TODO: handle exception
+
                                             }
 
                                         }
                                     } catch (Exception e) {
-                                        // TODO: handle exception
+
                                     }
 
                                 }
                             }
                         }
                     } catch (Exception e) {
-                        // TODO: handle exception
+
                     }
 
                     break;
@@ -612,7 +601,8 @@ public class board {
                     // letter look
                     for (int LetterLocation = 0; LetterLocation < letterArr.length && !done; LetterLocation++) {
                         if (userInput.substring(1, 2).equals(letterArr[LetterLocation])) {
-                            for (int whatBishop = 1; whatBishop <= numberOfWhiteBishops && !done; whatBishop++) {
+                            for (int whatBishop = 1; whatBishop <= numberOfEachPiece.get("whiteBishops")
+                                    && !done; whatBishop++) {
                                 try {
                                     if (pieces.get("white bishop - " + whatBishop).getLocation().substring(0, 1)
                                             .equals(userInput.substring(1, 2))) {
@@ -631,11 +621,11 @@ public class board {
                                                 }
                                             }
                                         } catch (Exception e) {
-                                            // TODO: handle exception
+
                                         }
                                     }
                                 } catch (Exception e) {
-                                    // TODO: handle exception
+
                                 }
 
                             }
@@ -646,7 +636,8 @@ public class board {
                     try {
                         for (int numberLocation = 1; numberLocation < numberArr.length && !done; numberLocation++) {
                             if (Integer.parseInt(userInput.substring(1, 2)) == numberArr[numberLocation - 1]) {
-                                for (int whatBishop = 1; whatBishop <= numberOfWhiteBishops && !done; whatBishop++) {
+                                for (int whatBishop = 1; whatBishop <= numberOfEachPiece.get("whiteBishops")
+                                        && !done; whatBishop++) {
                                     try {
                                         if (pieces.get("white bishop - " + whatBishop).getLocation().substring(1, 2)
                                                 .equals(userInput.substring(1, 2))) {
@@ -668,19 +659,19 @@ public class board {
                                                     }
                                                 }
                                             } catch (Exception e) {
-                                                // TODO: handle exception
+
                                             }
 
                                         }
                                     } catch (Exception e) {
-                                        // TODO: handle exception
+
                                     }
 
                                 }
                             }
                         }
                     } catch (Exception e) {
-                        // TODO: handle exception
+
                     }
 
                     break;
@@ -691,7 +682,8 @@ public class board {
                     // letter look
                     for (int LetterLocation = 0; LetterLocation < letterArr.length && !done; LetterLocation++) {
                         if (userInput.substring(1, 2).equals(letterArr[LetterLocation])) {
-                            for (int whatRook = 1; whatRook <= numberOfWhiteRooks && !done; whatRook++) {
+                            for (int whatRook = 1; whatRook <= numberOfEachPiece.get("whiteBishops")
+                                    && !done; whatRook++) {
                                 try {
                                     if (pieces.get("white rook - " + whatRook).getLocation().substring(0, 1)
                                             .equals(userInput.substring(1, 2))) {
@@ -710,11 +702,11 @@ public class board {
                                                 }
                                             }
                                         } catch (Exception e) {
-                                            // TODO: handle exception
+
                                         }
                                     }
                                 } catch (Exception e) {
-                                    // TODO: handle exception
+
                                 }
 
                             }
@@ -725,20 +717,21 @@ public class board {
                     try {
                         for (int numberLocation = 1; numberLocation < numberArr.length && !done; numberLocation++) {
                             if (Integer.parseInt(userInput.substring(1, 2)) == numberArr[numberLocation - 1]) {
-                                for (int whatRook = 1; whatRook <= numberOfWhiteRooks && !done; whatRook++) {
+                                for (int whatRook = 1; whatRook <= numberOfEachPiece.get("whiteRooks")
+                                        && !done; whatRook++) {
                                     try {
-                                        if (pieces.get("white knight - " + whatRook).getLocation().substring(1, 2)
+                                        if (pieces.get("white rook - " + whatRook).getLocation().substring(1, 2)
                                                 .equals(userInput.substring(1, 2))) {
-                                            knightValidMove("white knight - " + whatRook);
+                                            rookValidMove("white rook - " + whatRook);
 
                                             try {
-                                                for (int a = 0; a < pieces.get("white knight - " + whatRook).validMoves
+                                                for (int a = 0; a < pieces.get("white rook - " + whatRook).validMoves
                                                         .size() && !done; a++) {
-                                                    if (pieces.get("white knight - " + whatRook).validMoves.get(a)
+                                                    if (pieces.get("white rook - " + whatRook).validMoves.get(a)
                                                             .equals(userInput.substring(2))) {
                                                         // move the piece
 
-                                                        pieces.get("white knight - " + whatRook)
+                                                        pieces.get("white rook - " + whatRook)
                                                                 .setLocation(userInput.substring(2));
                                                         done = true;
                                                         break;
@@ -746,19 +739,19 @@ public class board {
                                                     }
                                                 }
                                             } catch (Exception e) {
-                                                // TODO: handle exception
+
                                             }
 
                                         }
                                     } catch (Exception e) {
-                                        // TODO: handle exception
+
                                     }
 
                                 }
                             }
                         }
                     } catch (Exception e) {
-                        // TODO: handle exception
+
                     }
 
                     break;
@@ -767,8 +760,8 @@ public class board {
                     break;
             }
         }
-        
-        //if two pieces big pieces can capture the same location
+
+        // if two pieces big pieces can capture the same location
         if (userInput.length() == 5 && userInputArr[2] == 'x') {
             switch (userInputArr[0]) {
                 case 'Q':
@@ -777,7 +770,8 @@ public class board {
                     // letter look
                     for (int LetterLocation = 0; LetterLocation < letterArr.length && !done; LetterLocation++) {
                         if (userInput.substring(1, 2).equals(letterArr[LetterLocation])) {
-                            for (int whatQueen = 1; whatQueen <= numberOfWhiteQueens && !done; whatQueen++) {
+                            for (int whatQueen = 1; whatQueen <= numberOfEachPiece.get("whiteQueens")
+                                    && !done; whatQueen++) {
                                 try {
                                     if (pieces.get("white queen - " + whatQueen).getLocation().substring(0, 1)
                                             .equals(userInput.substring(1, 2))) {
@@ -797,12 +791,12 @@ public class board {
                                                 }
                                             }
                                         } catch (Exception e) {
-                                            // TODO: handle exception
+
                                         }
 
                                     }
                                 } catch (Exception e) {
-                                    // TODO: handle exception
+
                                 }
 
                             }
@@ -813,7 +807,8 @@ public class board {
                     try {
                         for (int numberLocation = 1; numberLocation < numberArr.length && !done; numberLocation++) {
                             if (Integer.parseInt(userInput.substring(1, 2)) == numberArr[numberLocation - 1]) {
-                                for (int whatQueen = 1; whatQueen <= numberOfWhiteQueens && !done; whatQueen++) {
+                                for (int whatQueen = 1; whatQueen <= numberOfEachPiece.get("whiteQueens")
+                                        && !done; whatQueen++) {
                                     try {
                                         if (pieces.get("white queen - " + whatQueen).getLocation().substring(1, 2)
                                                 .equals(userInput.substring(1, 2))) {
@@ -834,19 +829,19 @@ public class board {
                                                     }
                                                 }
                                             } catch (Exception e) {
-                                                // TODO: handle exception
+
                                             }
 
                                         }
                                     } catch (Exception e) {
-                                        // TODO: handle exception
+
                                     }
 
                                 }
                             }
                         }
                     } catch (Exception e) {
-                        // TODO: handle exception
+
                     }
                     break;
                 case 'N':
@@ -855,7 +850,8 @@ public class board {
                     // letter look
                     for (int LetterLocation = 0; LetterLocation < letterArr.length && !done; LetterLocation++) {
                         if (userInput.substring(1, 2).equals(letterArr[LetterLocation])) {
-                            for (int whatKnight = 1; whatKnight <= numberOfWhiteKnights && !done; whatKnight++) {
+                            for (int whatKnight = 1; whatKnight <= numberOfEachPiece.get("whiteKnights")
+                                    && !done; whatKnight++) {
                                 try {
                                     if (pieces.get("white knight - " + whatKnight).getLocation().substring(0, 1)
                                             .equals(userInput.substring(1, 2))) {
@@ -875,12 +871,12 @@ public class board {
                                                 }
                                             }
                                         } catch (Exception e) {
-                                            // TODO: handle exception
+
                                         }
 
                                     }
                                 } catch (Exception e) {
-                                    // TODO: handle exception
+
                                 }
 
                             }
@@ -891,7 +887,8 @@ public class board {
                     try {
                         for (int numberLocation = 1; numberLocation < numberArr.length && !done; numberLocation++) {
                             if (Integer.parseInt(userInput.substring(1, 2)) == numberArr[numberLocation - 1]) {
-                                for (int whatKnight = 1; whatKnight <= numberOfWhiteKnights && !done; whatKnight++) {
+                                for (int whatKnight = 1; whatKnight <= numberOfEachPiece.get("whitePawns")
+                                        && !done; whatKnight++) {
                                     try {
                                         if (pieces.get("white knight - " + whatKnight).getLocation().substring(1, 2)
                                                 .equals(userInput.substring(1, 2))) {
@@ -913,19 +910,19 @@ public class board {
                                                     }
                                                 }
                                             } catch (Exception e) {
-                                                // TODO: handle exception
+
                                             }
 
                                         }
                                     } catch (Exception e) {
-                                        // TODO: handle exception
+
                                     }
 
                                 }
                             }
                         }
                     } catch (Exception e) {
-                        // TODO: handle exception
+
                     }
 
                     break;
@@ -936,7 +933,8 @@ public class board {
                     // letter look
                     for (int LetterLocation = 0; LetterLocation < letterArr.length && !done; LetterLocation++) {
                         if (userInput.substring(1, 2).equals(letterArr[LetterLocation])) {
-                            for (int whatBishop = 1; whatBishop <= numberOfWhiteBishops && !done; whatBishop++) {
+                            for (int whatBishop = 1; whatBishop <= numberOfEachPiece.get("whiteBishops")
+                                    && !done; whatBishop++) {
                                 try {
                                     if (pieces.get("white bishop - " + whatBishop).getLocation().substring(0, 1)
                                             .equals(userInput.substring(1, 2))) {
@@ -955,11 +953,11 @@ public class board {
                                                 }
                                             }
                                         } catch (Exception e) {
-                                            // TODO: handle exception
+
                                         }
                                     }
                                 } catch (Exception e) {
-                                    // TODO: handle exception
+
                                 }
 
                             }
@@ -970,7 +968,8 @@ public class board {
                     try {
                         for (int numberLocation = 1; numberLocation < numberArr.length && !done; numberLocation++) {
                             if (Integer.parseInt(userInput.substring(1, 2)) == numberArr[numberLocation - 1]) {
-                                for (int whatBishop = 1; whatBishop <= numberOfWhiteBishops && !done; whatBishop++) {
+                                for (int whatBishop = 1; whatBishop <= numberOfEachPiece.get("whiteBishops")
+                                        && !done; whatBishop++) {
                                     try {
                                         if (pieces.get("white bishop - " + whatBishop).getLocation().substring(1, 2)
                                                 .equals(userInput.substring(1, 2))) {
@@ -992,19 +991,19 @@ public class board {
                                                     }
                                                 }
                                             } catch (Exception e) {
-                                                // TODO: handle exception
+
                                             }
 
                                         }
                                     } catch (Exception e) {
-                                        // TODO: handle exception
+
                                     }
 
                                 }
                             }
                         }
                     } catch (Exception e) {
-                        // TODO: handle exception
+
                     }
 
                     break;
@@ -1015,7 +1014,8 @@ public class board {
                     // letter look
                     for (int LetterLocation = 0; LetterLocation < letterArr.length && !done; LetterLocation++) {
                         if (userInput.substring(1, 2).equals(letterArr[LetterLocation])) {
-                            for (int whatRook = 1; whatRook <= numberOfWhiteRooks && !done; whatRook++) {
+                            for (int whatRook = 1; whatRook <= numberOfEachPiece.get("whiteRooks")
+                                    && !done; whatRook++) {
                                 try {
                                     if (pieces.get("white rook - " + whatRook).getLocation().substring(0, 1)
                                             .equals(userInput.substring(1, 2))) {
@@ -1034,11 +1034,11 @@ public class board {
                                                 }
                                             }
                                         } catch (Exception e) {
-                                            // TODO: handle exception
+
                                         }
                                     }
                                 } catch (Exception e) {
-                                    // TODO: handle exception
+
                                 }
 
                             }
@@ -1048,21 +1048,22 @@ public class board {
                     done = false;
                     try {
                         for (int numberLocation = 1; numberLocation < numberArr.length && !done; numberLocation++) {
-                            if (Integer.parseInt(userInput.substring(1, 2)) == numberArr[numberLocation - 1]) {
-                                for (int whatRook = 1; whatRook <= numberOfWhiteRooks && !done; whatRook++) {
+                            if (Integer.parseInt(userInput.substring(1, 2)) == numberArr[numberLocation]) {
+                                for (int whatRook = 1; whatRook <= numberOfEachPiece.get("whiteRooks")
+                                        && !done; whatRook++) {
                                     try {
-                                        if (pieces.get("white knight - " + whatRook).getLocation().substring(1, 2)
+                                        if (pieces.get("white rook - " + whatRook).getLocation().substring(1, 2)
                                                 .equals(userInput.substring(1, 2))) {
-                                            knightValidMove("white knight - " + whatRook);
+                                            rookValidMove("white rook - " + whatRook);
 
                                             try {
-                                                for (int a = 0; a < pieces.get("white knight - " + whatRook).validMoves
+                                                for (int a = 0; a < pieces.get("white rook - " + whatRook).validMoves
                                                         .size() && !done; a++) {
-                                                    if (pieces.get("white knight - " + whatRook).validMoves.get(a)
+                                                    if (pieces.get("white rook - " + whatRook).validMoves.get(a)
                                                             .equals(userInput.substring(3))) {
                                                         // move the piece
 
-                                                        pieces.get("white knight - " + whatRook)
+                                                        pieces.get("white rook - " + whatRook)
                                                                 .setLocation(userInput.substring(3));
                                                         done = true;
                                                         break;
@@ -1070,19 +1071,19 @@ public class board {
                                                     }
                                                 }
                                             } catch (Exception e) {
-                                                // TODO: handle exception
+
                                             }
 
                                         }
                                     } catch (Exception e) {
-                                        // TODO: handle exception
+
                                     }
 
                                 }
                             }
                         }
                     } catch (Exception e) {
-                        // TODO: handle exception
+
                     }
 
                     break;
@@ -1092,72 +1093,418 @@ public class board {
             }
         }
 
+        // if more then two big pieces can move to the same location
+        if(userInput.length() == 5 && userInputArr[2] != 'x'){
+            switch (userInputArr[0]) {
+                case 'Q':
+                    // letter
+                    for (int letterOfQueen = 0; letterOfQueen < letterArr.length; letterOfQueen++) {
+                        if (userInput.substring(1, 2).equals(letterArr[letterOfQueen])) {
+                            for (int numberLocationOfQueen = 1; numberLocationOfQueen < numberArr.length; numberLocationOfQueen++) {
+                                if (Integer.parseInt(userInput.substring(2, 3))==(numberArr[numberLocationOfQueen-1])) {
+                                    // now we know the the location of the queen we want to move
+                                    for (int whatQueen = 1, foundQueens = 0; foundQueens < numberOfEachPiece
+                                            .get("whiteQueens"); whatQueen++) {
+                                        try {
+                                            String locationOfCurrentQueen = pieces.get("white queen - " + whatQueen)
+                                                    .getLocation();
+                                            foundQueens++;
+                                            String tempLocation = letterArr[letterOfQueen] + numberLocationOfQueen;
+                                            if (locationOfCurrentQueen.equals(tempLocation)) {
+                                                queenValidMove("white queen - " + whatQueen);
+                                                // now we need to capture and move the queen
+                                                for (int currentValidMove = 0; currentValidMove < pieces
+                                                        .get("white queen - " + whatQueen).validMoves
+                                                        .size(); currentValidMove++) {
+                                                    // find witch valid move we are doing
+                                                    if (userInput.substring(3)
+                                                            .equals(pieces.get("white queen - " + whatQueen).validMoves
+                                                                    .get(currentValidMove))) {
+                                                        
+                                                        pieces.get("white queen - " + whatQueen)
+                                                                .setLocation(userInput.substring(3));
+                                                                break;
+                                                    }
+                                                }
+                                            }
+                                        } catch (Exception e) {
 
-        //if two or more pieces can move to the same location
-        //if two or more pieces can capture the same location
+                                        }
+
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    break;
+                case 'R':
+                    // letter
+                    for (int letterLocationOfRook = 0; letterLocationOfRook < letterArr.length; letterLocationOfRook++) {
+                        if (userInput.substring(2, 3) == letterArr[letterLocationOfRook]) {
+                            for (int numberLocationOfRook = 1; numberLocationOfRook < numberArr.length; numberLocationOfRook++) {
+                                if (Integer.parseInt( userInput.substring(2, 3)) == numberArr[numberLocationOfRook-1]) {
+                                    // now we know the the location of the queen we want to move
+                                    for (int whatRook = 0, foundRooks = 0; foundRooks < numberOfEachPiece
+                                            .get("whiteRooks"); whatRook++) {
+                                        try {
+                                            String locationOfCurrentQueen = pieces.get("white rook - " + whatRook)
+                                                    .getLocation();
+                                            foundRooks++;
+                                            String tempLocation = letterArr[letterLocationOfRook]
+                                                    + numberLocationOfRook;
+                                            if (locationOfCurrentQueen.equals(tempLocation)) {
+                                                rookValidMove("white rook - " + whatRook);
+                                                // now we need to capture and move the queen
+                                                for (int currentValidMove = 0; currentValidMove < pieces
+                                                        .get("white rook - " + whatRook).validMoves
+                                                        .size(); currentValidMove++) {
+                                                    // find witch valid move we are doing
+                                                    if (userInput.substring(3)
+                                                            .equals(pieces.get("white rook - " + whatRook).validMoves
+                                                                    .get(currentValidMove))) {
+                                                        
+                                                        pieces.get("white rook - " + whatRook)
+                                                                .setLocation(userInput.substring(3));
+                                                    }
+                                                }
+                                            }
+                                        } catch (Exception e) {
+
+                                        }
+
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    break;
+                case 'B':
+                    // letter
+                    for (int letterLocationOfBishop = 0; letterLocationOfBishop < letterArr.length; letterLocationOfBishop++) {
+                        if (userInput.substring(2, 3) == letterArr[letterLocationOfBishop]) {
+                            for (int numberLocationOfBishop = 1; numberLocationOfBishop < numberArr.length; numberLocationOfBishop++) {
+                                if (Integer.parseInt( userInput.substring(2, 3)) == numberArr[numberLocationOfBishop - 1 ]) {
+                                    // now we know the the location of the queen we want to move
+                                    for (int whatBishop = 0, foundBishops = 0; foundBishops < numberOfEachPiece
+                                            .get("whiteBishops"); whatBishop++) {
+                                        try {
+                                            String locationOfCurrentQueen = pieces.get("white bishop - " + whatBishop)
+                                                    .getLocation();
+                                            foundBishops++;
+                                            String tempLocation = letterArr[letterLocationOfBishop]
+                                                    + numberLocationOfBishop;
+                                            if (locationOfCurrentQueen.equals(tempLocation)) {
+                                                bishopValidMove("white bishop - " + whatBishop);
+                                                // now we need to capture and move the queen
+                                                for (int currentValidMove = 0; currentValidMove < pieces
+                                                        .get("white bishop - " + whatBishop).validMoves
+                                                        .size(); currentValidMove++) {
+                                                    // find witch valid move we are doing
+                                                    if (userInput.substring(3)
+                                                            .equals(pieces
+                                                                    .get("white bishop - " + whatBishop).validMoves
+                                                                    .get(currentValidMove))) {
+                                                        
+                                                        pieces.get("white bishop - " + whatBishop)
+                                                                .setLocation(userInput.substring(3));
+                                                    }
+                                                }
+                                            }
+                                        } catch (Exception e) {
+
+                                        }
+
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    break;
+
+                case 'N':
+                    // letter
+                    for (int letterLocationOfKnight = 0; letterLocationOfKnight < letterArr.length; letterLocationOfKnight++) {
+                        if (userInput.substring(2, 3) == letterArr[letterLocationOfKnight]) {
+                            for (int numberLocationOfKnight = 1; numberLocationOfKnight < numberArr.length; numberLocationOfKnight++) {
+                                if (Integer.parseInt( userInput.substring(2, 3)) == numberArr[numberLocationOfKnight-1]) {
+                                    // now we know the the location of the queen we want to move
+                                    for (int whatRook = 0, foundRooks = 0; foundRooks < numberOfEachPiece
+                                            .get("whiteKnights"); whatRook++) {
+                                        try {
+                                            String locationOfCurrentQueen = pieces.get("white knight - " + whatRook)
+                                                    .getLocation();
+                                            foundRooks++;
+                                            String tempLocation = letterArr[letterLocationOfKnight]
+                                                    + numberLocationOfKnight;
+                                            if (locationOfCurrentQueen.equals(tempLocation)) {
+                                                knightValidMove("white knight - " + whatRook);
+                                                // now we need to capture and move the queen
+                                                for (int currentValidMove = 0; currentValidMove < pieces
+                                                        .get("white knight - " + whatRook).validMoves
+                                                        .size(); currentValidMove++) {
+                                                    // find witch valid move we are doing
+                                                    if (userInput.substring(3)
+                                                            .equals(pieces.get("white knight - " + whatRook).validMoves
+                                                                    .get(currentValidMove))) {
+                                                        
+                                                        pieces.get("white knight - " + whatRook)
+                                                                .setLocation(userInput.substring(3));
+                                                    }
+                                                }
+                                            }
+                                        } catch (Exception e) {
+
+                                        }
+
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    break;
+
+                default:
+                    break;
+            }
+        }
+
+        // if more then two big pieces can capture the same location
+        if (userInput.length() == 6 && userInputArr[3] == 'x') {
+            switch (userInputArr[0]) {
+                case 'Q':
+                    // letter
+                    for (int letterOfQueen = 0; letterOfQueen < letterArr.length; letterOfQueen++) {
+                        if (userInput.substring(1, 2) == letterArr[letterOfQueen]) {
+                            for (int numberLocationOfQueen = 1; numberLocationOfQueen < numberArr.length; numberLocationOfQueen++) {
+                                if (Integer.parseInt(userInput.substring(2, 3)) == numberArr[numberLocationOfQueen]) {
+                                    // now we know the the location of the queen we want to move
+                                    for (int whatQueen = 0, foundQueens = 0; foundQueens < numberOfEachPiece
+                                            .get("whiteQueens"); whatQueen++) {
+                                        try {
+                                            String locationOfCurrentQueen = pieces.get("white queen - " + whatQueen)
+                                                    .getLocation();
+                                            foundQueens++;
+                                            String tempLocation = letterArr[letterOfQueen] + numberLocationOfQueen;
+                                            if (locationOfCurrentQueen.equals(tempLocation)) {
+                                                queenValidMove("white queen - " + whatQueen);
+                                                // now we need to capture and move the queen
+                                                for (int currentValidMove = 0; currentValidMove < pieces
+                                                        .get("white queen - " + whatQueen).validMoves
+                                                        .size(); currentValidMove++) {
+                                                    // find witch valid move we are doing
+                                                    if (userInput.substring(4)
+                                                            .equals(pieces.get("white queen - " + whatQueen).validMoves
+                                                                    .get(currentValidMove))) {
+                                                        removePiece(userInput.substring(4));
+                                                        pieces.get("white queen - " + whatQueen)
+                                                                .setLocation(userInput.substring(4));
+                                                    }
+                                                }
+                                            }
+                                        } catch (Exception e) {
+
+                                        }
+
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    break;
+                case 'R':
+                    // letter
+                    for (int letterLocationOfRook = 0; letterLocationOfRook < letterArr.length; letterLocationOfRook++) {
+                        if (userInput.substring(1, 2) == letterArr[letterLocationOfRook]) {
+                            for (int numberLocationOfRook = 1; numberLocationOfRook < numberArr.length; numberLocationOfRook++) {
+                                if (Integer.parseInt(userInput.substring(2, 3)) == numberArr[numberLocationOfRook-1]) {
+                                    // now we know the the location of the queen we want to move
+                                    for (int whatRook = 0, foundRooks = 0; foundRooks < numberOfEachPiece
+                                            .get("whiteRooks"); whatRook++) {
+                                        try {
+                                            String locationOfCurrentQueen = pieces.get("white rook - " + whatRook)
+                                                    .getLocation();
+                                            foundRooks++;
+                                            String tempLocation = letterArr[letterLocationOfRook]
+                                                    + numberLocationOfRook;
+                                            if (locationOfCurrentQueen.equals(tempLocation)) {
+                                                rookValidMove("white rook - " + whatRook);
+                                                // now we need to capture and move the queen
+                                                for (int currentValidMove = 0; currentValidMove < pieces
+                                                        .get("white rook - " + whatRook).validMoves
+                                                        .size(); currentValidMove++) {
+                                                    // find witch valid move we are doing
+                                                    if (userInput.substring(4)
+                                                            .equals(pieces.get("white rook - " + whatRook).validMoves
+                                                                    .get(currentValidMove))) {
+                                                        removePiece(userInput.substring(4));
+                                                        pieces.get("white rook - " + whatRook)
+                                                                .setLocation(userInput.substring(4));
+                                                    }
+                                                }
+                                            }
+                                        } catch (Exception e) {
+
+                                        }
+
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    break;
+                case 'B':
+                    // letter
+                    for (int letterLocationOfBishop = 0; letterLocationOfBishop < letterArr.length; letterLocationOfBishop++) {
+                        if (userInput.substring(1, 2) == letterArr[letterLocationOfBishop]) {
+                            for (int numberLocationOfBishop = 0; numberLocationOfBishop < numberArr.length; numberLocationOfBishop++) {
+                                if (Integer.parseInt(userInput.substring(2, 3)) == numberArr[numberLocationOfBishop-1]) {
+                                    // now we know the the location of the queen we want to move
+                                    for (int whatBishop = 0, foundBishops = 0; foundBishops < numberOfEachPiece
+                                            .get("whiteBishops"); whatBishop++) {
+                                        try {
+                                            String locationOfCurrentQueen = pieces.get("white bishop - " + whatBishop)
+                                                    .getLocation();
+                                            foundBishops++;
+                                            String tempLocation = letterArr[letterLocationOfBishop]
+                                                    + numberLocationOfBishop;
+                                            if (locationOfCurrentQueen.equals(tempLocation)) {
+                                                bishopValidMove("white bishop - " + whatBishop);
+                                                // now we need to capture and move the queen
+                                                for (int currentValidMove = 0; currentValidMove < pieces
+                                                        .get("white bishop - " + whatBishop).validMoves
+                                                        .size(); currentValidMove++) {
+                                                    // find witch valid move we are doing
+                                                    if (userInput.substring(4)
+                                                            .equals(pieces
+                                                                    .get("white bishop - " + whatBishop).validMoves
+                                                                    .get(currentValidMove))) {
+                                                        removePiece(userInput.substring(4));
+                                                        pieces.get("white bishop - " + whatBishop)
+                                                                .setLocation(userInput.substring(4));
+                                                    }
+                                                }
+                                            }
+                                        } catch (Exception e) {
+
+                                        }
+
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    break;
+
+                case 'N':
+                    // letter
+                    for (int letterLocationOfKnight = 0; letterLocationOfKnight < letterArr.length; letterLocationOfKnight++) {
+                        if (userInput.substring(1, 2) == letterArr[letterLocationOfKnight]) {
+                            for (int numberLocationOfKnight = 1; numberLocationOfKnight < numberArr.length; numberLocationOfKnight++) {
+                                if (Integer.parseInt(userInput.substring(2, 3)) == numberArr[numberLocationOfKnight-1]) {
+                                    // now we know the the location of the queen we want to move
+                                    for (int whatRook = 0, foundRooks = 0; foundRooks < numberOfEachPiece
+                                            .get("whiteKnights"); whatRook++) {
+                                        try {
+                                            String locationOfCurrentQueen = pieces.get("white knight - " + whatRook)
+                                                    .getLocation();
+                                            foundRooks++;
+                                            String tempLocation = letterArr[letterLocationOfKnight]
+                                                    + numberLocationOfKnight;
+                                            if (locationOfCurrentQueen.equals(tempLocation)) {
+                                                knightValidMove("white knight - " + whatRook);
+                                                // now we need to capture and move the queen
+                                                for (int currentValidMove = 0; currentValidMove < pieces
+                                                        .get("white knight - " + whatRook).validMoves
+                                                        .size(); currentValidMove++) {
+                                                    // find witch valid move we are doing
+                                                    if (userInput.substring(4)
+                                                            .equals(pieces.get("white knight - " + whatRook).validMoves
+                                                                    .get(currentValidMove))) {
+                                                        removePiece(userInput.substring(4));
+                                                        pieces.get("white knight - " + whatRook)
+                                                                .setLocation(tempLocation);
+                                                    }
+                                                }
+                                            }
+                                        } catch (Exception e) {
+
+                                        }
+
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    break;
+
+                default:
+                    break;
+            }
+        }
         displayBoard();
     }
 
-    private void pawnPremote(String name, boolean move) {
-        String whatPieceToPremoteTo;
+    private void pawnPromote(String name, boolean move) {
+
+        String whatPieceToPromoteTo;
         if (move) {
-            whatPieceToPremoteTo = userInput.substring(3);
-            switch (whatPieceToPremoteTo) {
+            whatPieceToPromoteTo = userInput.substring(3);
+            switch (whatPieceToPromoteTo) {
                 case "Q":
-                    numberOfWhiteQueens++;
-                    pieces.put("white queen - " + numberOfWhiteQueens,
+                    increasePieceCount("whiteQueens");
+                    pieces.put("white queen - " + numberOfEachPiece.get("whiteQueens"),
                             new queen(userInput.substring(0, 2), "white queen"));
-                    numberOfWhitePawns--;
+                    decreasePieceCount("whitePawns");
                     break;
                 case "R":
-                    numberOfWhiteRooks++;
-                    pieces.put("white rook - " + numberOfWhiteRooks,
+                    increasePieceCount("whiteRooks");
+                    pieces.put("white rook - " + numberOfEachPiece.get("whiteRooks"),
                             new rook(userInput.substring(0, 2), "white rook"));
-                    numberOfWhitePawns--;
+                    decreasePieceCount("whitePawns");
                     break;
                 case "N":
-                    numberOfWhiteKnights++;
-                    numberOfWhitePawns--;
-                    pieces.put("white knight - " + numberOfWhiteKnights,
+                    increasePieceCount("whiteKnights");
+                    decreasePieceCount("whitePawns");
+                    pieces.put("white knight - " + numberOfEachPiece.get("whatKnights"),
                             new knight(userInput.substring(0, 2), "white knight"));
                     break;
                 case "B":
-                    numberOfWhiteBishops++;
-                    pieces.put("white bishop - " + numberOfWhiteBishops,
+                    increasePieceCount("whiteBishops");
+                    pieces.put("white bishop - " + numberOfEachPiece.get("whatBishops"),
                             new bishop(userInput.substring(0, 2), "white bishop"));
-                    numberOfWhitePawns--;
+                    decreasePieceCount("whitePawns");
                     break;
                 default:
                     break;
             }
         } else {
-            whatPieceToPremoteTo = userInput.substring(5);
+            whatPieceToPromoteTo = userInput.substring(5);
 
-            switch (whatPieceToPremoteTo) {
-                // switch userinput number
+            switch (whatPieceToPromoteTo) {
+                // switch user input number
                 case "Q":
-                    numberOfWhiteQueens++;
-                    pieces.put("white queen - " + numberOfWhiteQueens,
+                    increasePieceCount("whiteQueens");
+                    pieces.put("white queen - " + numberOfEachPiece.get("whiteQueens"),
                             new queen(userInput.substring(2, 4), "white queen"));
-                    numberOfWhitePawns--;
+                    decreasePieceCount("whitePawns");
                     break;
                 case "R":
-                    numberOfWhiteRooks++;
-                    pieces.put("white rook - " + numberOfWhiteRooks,
-                            new queen(userInput.substring(2, 4), "white rook"));
-                    numberOfWhitePawns--;
+                    increasePieceCount("whiteRooks");
+                    pieces.put("white rook - " + numberOfEachPiece.get("whiteRooks"),
+                            new rook(userInput.substring(2, 4), "white rook"));
+                    decreasePieceCount("whitePawns");
                     break;
                 case "N":
-                    numberOfWhiteKnights++;
-                    pieces.put("white knight - " + numberOfWhiteKnights,
-                            new queen(userInput.substring(2, 4), "white knight"));
-                    numberOfWhitePawns--;
+                    increasePieceCount("whiteKnights");
+                    pieces.put("white knight - " + numberOfEachPiece.get("whiteKnights"),
+                            new knight(userInput.substring(2, 4), "white knight"));
+                    decreasePieceCount("whitePawns");
                     break;
                 case "B":
-                    numberOfWhiteBishops++;
-                    pieces.put("white bishop - " + numberOfWhiteBishops,
-                            new queen(userInput.substring(2, 4), "white bishop"));
-                    numberOfWhitePawns--;
+                    increasePieceCount("whiteBishops");
+                    pieces.put("white bishop - " + numberOfEachPiece.get("whiteBishops"),
+                            new bishop(userInput.substring(2, 4), "white bishop"));
+                    decreasePieceCount("whitePawns");
                     break;
                 default:
                     break;
@@ -1165,6 +1512,18 @@ public class board {
         }
 
         pieces.remove(name);
+    }
+
+    private void increasePieceCount(String whatPiece) {
+        int tempInt = numberOfEachPiece.get(whatPiece);
+        pieces.remove(whatPiece);
+        numberOfEachPiece.put(whatPiece, tempInt + 1);
+    }
+
+    private void decreasePieceCount(String whatPiece) {
+        int tempInt = numberOfEachPiece.get(whatPiece);
+        pieces.remove(whatPiece);
+        numberOfEachPiece.put(whatPiece, tempInt - 1);
     }
 
     public void knightValidMove(String name) {
@@ -1177,36 +1536,67 @@ public class board {
         String[] letterArr = { "a", "b", "c", "d", "e", "f", "g", "h" };
         char[] decreasedLetter = decreaseLetter(locationArr[0]).toCharArray();
         char[] increasedLetter = increaseLetter(locationArr[0]).toCharArray();
-        // number +2
-        tempNumberLocationArr[0] = numberLocation + 2;
-        // letter +1
-        tempLetterLocationArr[0] = increaseLetter(locationArr[0]);
+        // number +2 letter +1
+        try {
+            tempNumberLocationArr[0] = numberLocation + 2;
+            tempLetterLocationArr[0] = increaseLetter(locationArr[0]);
+        } catch (Exception e) {
 
-        // number +2 letter -1
-        tempNumberLocationArr[1] = numberLocation + 2;
-        tempLetterLocationArr[1] = decreaseLetter(locationArr[0]);
+        }
 
-        // number -2 letter +1
-        tempNumberLocationArr[2] = numberLocation - 2;
-        tempLetterLocationArr[2] = increaseLetter(locationArr[0]);
-        // number -2 letter -1
-        tempNumberLocationArr[3] = numberLocation - 2;
-        tempLetterLocationArr[3] = decreaseLetter(locationArr[0]);
+        try {
+            // number +2 letter -1
+            tempNumberLocationArr[1] = numberLocation + 2;
+            tempLetterLocationArr[1] = decreaseLetter(locationArr[0]);
+        } catch (Exception e) {
 
-        // number +1 letter +2
-        tempNumberLocationArr[4] = numberLocation + 1;
-        tempLetterLocationArr[4] = increaseLetter(increasedLetter[0]);
-        // number -1 letter +2
-        tempNumberLocationArr[5] = numberLocation - 1;
-        tempLetterLocationArr[5] = increaseLetter(increasedLetter[0]);
+        }
 
-        // number +1 letter -2
-        tempNumberLocationArr[6] = numberLocation + 1;
-        tempLetterLocationArr[6] = decreaseLetter(decreasedLetter[0]);
+        try {
+            // number -2 letter +1
+            tempNumberLocationArr[2] = numberLocation - 2;
+            tempLetterLocationArr[2] = increaseLetter(locationArr[0]);
+        } catch (Exception e) {
 
-        // number -1 letter -2
-        tempNumberLocationArr[7] = numberLocation - 1;
-        tempLetterLocationArr[7] = decreaseLetter(decreasedLetter[0]);
+        }
+        try {
+            // number -2 letter -1
+            tempNumberLocationArr[3] = numberLocation - 2;
+            tempLetterLocationArr[3] = decreaseLetter(locationArr[0]);
+        } catch (Exception e) {
+
+        }
+
+        try {
+            // number +1 letter +2
+            tempNumberLocationArr[4] = numberLocation + 1;
+            tempLetterLocationArr[4] = increaseLetter(increasedLetter[0]);
+        } catch (Exception e) {
+
+        }
+        try {
+            // number -1 letter +2
+            tempNumberLocationArr[5] = numberLocation - 1;
+            tempLetterLocationArr[5] = increaseLetter(increasedLetter[0]);
+        } catch (Exception e) {
+
+        }
+
+        try {
+            // number +1 letter -2
+            tempNumberLocationArr[6] = numberLocation + 1;
+            tempLetterLocationArr[6] = decreaseLetter(decreasedLetter[0]);
+        } catch (Exception e) {
+
+        }
+
+        try {
+            // number -1 letter -2
+            tempNumberLocationArr[7] = numberLocation - 1;
+            tempLetterLocationArr[7] = decreaseLetter(decreasedLetter[0]);
+        } catch (Exception e) {
+
+        }
 
         boolean letterIsOnBoard = false;
         for (int i = 0; i < 8; i++) {
@@ -1224,7 +1614,7 @@ public class board {
 
             if (whoIsAtLocationBackend(tempLocation).equals("") && letterIsOnBoard) {
                 pieces.get(name).validMoves.add(tempLocation);
-            } // if someone is there and they are capturable
+            } // if someone is there and they can be capture
             else if (whoIsAtLocationBackend(tempLocation).substring(0, 1).equals("2")
                     && name.substring(0, 1).equals("w")) {
                 // they are black and we are white
@@ -1256,7 +1646,7 @@ public class board {
 
             String tempLetterLocation = increaseLetter(lettersArr[i]);
 
-            // ensure locaiton is on the borad
+            // ensure location is on the board
             if (tempNumberLocation > 8 || tempLetterLocation.equals("")) {
                 break;
             }
@@ -1267,7 +1657,7 @@ public class board {
             if (whoIsAtLocationBackend(tempLocation).equals("")) {
                 // add the temp location as a valid move
                 pieces.get(name).validMoves.add(tempLocation);
-            } // if someone is there and they are capturable
+            } // if someone is there and they can be captured
             else if (whoIsAtLocationBackend(tempLocation).substring(0, 1).equals("2")
                     && name.substring(0, 1).equals("w")) {
                 // they are black and we are white
@@ -1292,7 +1682,7 @@ public class board {
 
             String tempLetterLocation = increaseLetter(lettersArr[i]);
 
-            // ensure locaiton is on the borad
+            // ensure location is on the board
             if (tempNumberLocation < 1 || tempLetterLocation.equals("")) {
                 break;
             }
@@ -1303,7 +1693,7 @@ public class board {
             if (whoIsAtLocationBackend(tempLocation).equals("")) {
                 // add the temp location as a valid move
                 pieces.get(name).validMoves.add(tempLocation);
-            } // if someone is there and they are capturable
+            } // if someone is there and they can be captured
             else if (whoIsAtLocationBackend(tempLocation).substring(0, 1).equals("2")
                     && name.substring(0, 1).equals("w")) {
                 // they are black and we are white
@@ -1329,7 +1719,7 @@ public class board {
 
             String tempLetterLocation = decreaseLetter(lettersArr[i]);
 
-            // ensure locaiton is on the borad
+            // ensure location is on the board
             if (tempNumberLocation < 1 || tempLetterLocation.equals("")) {
                 break;
             }
@@ -1340,7 +1730,7 @@ public class board {
             if (whoIsAtLocationBackend(tempLocation).equals("")) {
                 // add the temp location as a valid move
                 pieces.get(name).validMoves.add(tempLocation);
-            } // if someone is there and they are capturable
+            } // if someone is there and they can be captured
             else if (whoIsAtLocationBackend(tempLocation).substring(0, 1).equals("2")
                     && name.substring(0, 1).equals("w")) {
                 // they are black and we are white
@@ -1366,7 +1756,7 @@ public class board {
 
             String tempLetterLocation = decreaseLetter(lettersArr[i]);
 
-            // ensure locaiton is on the borad
+            // ensure location is on the board
             if (tempNumberLocation > 8 || tempLetterLocation.equals("")) {
                 break;
             }
@@ -1377,7 +1767,7 @@ public class board {
             if (whoIsAtLocationBackend(tempLocation).equals("")) {
                 // add the temp location as a valid move
                 pieces.get(name).validMoves.add(tempLocation);
-            } // if someone is there and they are capturable
+            } // if someone is there and they can be captured
             else if (whoIsAtLocationBackend(tempLocation).substring(0, 1).equals("2")
                     && name.substring(0, 1).equals("w")) {
                 // they are black and we are white
@@ -1403,7 +1793,7 @@ public class board {
 
         for (int i = numberlocation; i <= 8; i++) {
 
-            // make sure locaiton in empty
+            // make sure location in empty
             String tempLocation = letterLocation + i;
             if (tempLocation.equals(pieces.get(name).location)) {
                 continue;
@@ -1411,7 +1801,7 @@ public class board {
 
             if (whoIsAtLocationBackend(tempLocation).equals("")) {
                 pieces.get(name).validMoves.add(tempLocation);
-            } // if someone is there and they are capturable
+            } // if someone is there and they can be captured
             else if (whoIsAtLocationBackend(tempLocation).substring(0, 1).equals("2")
                     && name.substring(0, 1).equals("w")) {
                 // they are black and we are white
@@ -1434,7 +1824,7 @@ public class board {
         // down
         for (int i = numberlocation; i >= 1; i--) {
 
-            // make sure locaiton in empty
+            // make sure location in empty
             String tempLocation = letterLocation + i;
             if (tempLocation.equals(pieces.get(name).location)) {
                 continue;
@@ -1442,7 +1832,7 @@ public class board {
             // ensure that the location is on the bou
             if (whoIsAtLocationBackend(tempLocation).equals("")) {
                 pieces.get(name).validMoves.add(tempLocation);
-            } // if someone is there and they are capturable
+            } // if someone is there and they can be captured
             else if (whoIsAtLocationBackend(tempLocation).substring(0, 1).equals("2")
                     && name.substring(0, 1).equals("w")) {
                 // they are black and we are white
@@ -1473,7 +1863,7 @@ public class board {
 
                     if (whoIsAtLocationBackend(tempLocation).equals("")) {
                         pieces.get(name).validMoves.add(tempLocation);
-                    } // if someone is there and they are capturable
+                    } // if someone is there and they can be captured
                     else if (whoIsAtLocationBackend(tempLocation).substring(0, 1).equals("2")
                             && name.substring(0, 1).equals("w")) {
                         // they are black and we are white
@@ -1505,7 +1895,7 @@ public class board {
 
                     if (whoIsAtLocationBackend(tempLocation).equals("")) {
                         pieces.get(name).validMoves.add(tempLocation);
-                    } // if someone is there and they are capturable
+                    } // if someone is there and they can be captured
                     else if (whoIsAtLocationBackend(tempLocation).substring(0, 1).equals("2")
                             && name.substring(0, 1).equals("w")) {
                         // they are black and we are white
@@ -1548,7 +1938,7 @@ public class board {
 
             String tempLetterLocation = increaseLetter(lettersArr[i]);
 
-            // ensure locaiton is on the borad
+            // ensure location is on the board
             if (tempNumberLocation > 8 || tempLetterLocation.equals("")) {
                 break;
             }
@@ -1559,7 +1949,7 @@ public class board {
             if (whoIsAtLocationBackend(tempLocation).equals("")) {
                 // add the temp location as a valid move
                 pieces.get(name).validMoves.add(tempLocation);
-            } // if someone is there and they are capturable
+            } // if someone is there and they can be captured
             else if (whoIsAtLocationBackend(tempLocation).substring(0, 1).equals("2")
                     && name.substring(0, 1).equals("w")) {
                 // they are black and we are white
@@ -1584,7 +1974,7 @@ public class board {
 
             String tempLetterLocation = increaseLetter(lettersArr[i]);
 
-            // ensure locaiton is on the borad
+            // ensure location is on the board
             if (tempNumberLocation < 1 || tempLetterLocation.equals("")) {
                 break;
             }
@@ -1595,7 +1985,7 @@ public class board {
             if (whoIsAtLocationBackend(tempLocation).equals("")) {
                 // add the temp location as a valid move
                 pieces.get(name).validMoves.add(tempLocation);
-            } // if someone is there and they are capturable
+            } // if someone is there and they can be captured
             else if (whoIsAtLocationBackend(tempLocation).substring(0, 1).equals("2")
                     && name.substring(0, 1).equals("w")) {
                 // they are black and we are white
@@ -1621,7 +2011,7 @@ public class board {
 
             String tempLetterLocation = decreaseLetter(lettersArr[i]);
 
-            // ensure locaiton is on the borad
+            // ensure location is on the board
             if (tempNumberLocation < 1 || tempLetterLocation.equals("")) {
                 break;
             }
@@ -1632,7 +2022,7 @@ public class board {
             if (whoIsAtLocationBackend(tempLocation).equals("")) {
                 // add the temp location as a valid move
                 pieces.get(name).validMoves.add(tempLocation);
-            } // if someone is there and they are capturable
+            } // if someone is there and they can be captured
             else if (whoIsAtLocationBackend(tempLocation).substring(0, 1).equals("2")
                     && name.substring(0, 1).equals("w")) {
                 // they are black and we are white
@@ -1658,7 +2048,7 @@ public class board {
 
             String tempLetterLocation = decreaseLetter(lettersArr[i]);
 
-            // ensure locaiton is on the borad
+            // ensure location is on the board
             if (tempNumberLocation > 8 || tempLetterLocation.equals("")) {
                 break;
             }
@@ -1669,7 +2059,7 @@ public class board {
             if (whoIsAtLocationBackend(tempLocation).equals("")) {
                 // add the temp location as a valid move
                 pieces.get(name).validMoves.add(tempLocation);
-            } // if someone is there and they are capturable
+            } // if someone is there and they can be captured
             else if (whoIsAtLocationBackend(tempLocation).substring(0, 1).equals("2")
                     && name.substring(0, 1).equals("w")) {
                 // they are black and we are white
@@ -1702,7 +2092,7 @@ public class board {
 
         for (int i = numberlocation; i <= 8; i++) {
 
-            // make sure locaiton in empty
+            // make sure location in empty
             String tempLocation = letterLocation + i;
             if (tempLocation.equals(pieces.get(name).location)) {
                 continue;
@@ -1710,7 +2100,7 @@ public class board {
 
             if (whoIsAtLocationBackend(tempLocation).equals("")) {
                 pieces.get(name).validMoves.add(tempLocation);
-            } // if someone is there and they are capturable
+            } // if someone is there and they can be captured
             else if (whoIsAtLocationBackend(tempLocation).substring(0, 1).equals("2")
                     && name.substring(0, 1).equals("w")) {
                 // they are black and we are white
@@ -1733,7 +2123,7 @@ public class board {
         // down
         for (int i = numberlocation; i >= 1; i--) {
 
-            // make sure locaiton in empty
+            // make sure location in empty
             String tempLocation = letterLocation + i;
             if (tempLocation.equals(pieces.get(name).location)) {
                 continue;
@@ -1741,7 +2131,7 @@ public class board {
             // ensure that the location is on the bou
             if (whoIsAtLocationBackend(tempLocation).equals("")) {
                 pieces.get(name).validMoves.add(tempLocation);
-            } // if someone is there and they are capturable
+            } // if someone is there and they can be captured
             else if (whoIsAtLocationBackend(tempLocation).substring(0, 1).equals("2")
                     && name.substring(0, 1).equals("w")) {
                 // they are black and we are white
@@ -1772,7 +2162,7 @@ public class board {
 
                     if (whoIsAtLocationBackend(tempLocation).equals("")) {
                         pieces.get(name).validMoves.add(tempLocation);
-                    } // if someone is there and they are capturable
+                    } // if someone is there and they can be captured
                     else if (whoIsAtLocationBackend(tempLocation).substring(0, 1).equals("2")
                             && name.substring(0, 1).equals("w")) {
                         // they are black and we are white
@@ -1804,7 +2194,7 @@ public class board {
 
                     if (whoIsAtLocationBackend(tempLocation).equals("")) {
                         pieces.get(name).validMoves.add(tempLocation);
-                    } // if someone is there and they are capturable
+                    } // if someone is there and they can be captured
                     else if (whoIsAtLocationBackend(tempLocation).substring(0, 1).equals("2")
                             && name.substring(0, 1).equals("w")) {
                         // they are black and we are white
@@ -1873,7 +2263,7 @@ public class board {
                     // add valid locations
                     pieces.get(name).validMoves.add(tempLocation);
                 }
-                // if someone is there and they are capturable
+                // if someone is there and they can be captured
                 else if (whoIsAtLocationBackend(tempLocation).substring(0, 1).equals("2")
                         && name.substring(0, 1).equals("w")) {
                     // they are black and we are white
@@ -1913,18 +2303,18 @@ public class board {
         String captureRight = increaseLetter(locationArr[0]) + numberlocation;
         boolean checkCaptureRight = false;
         if (userInput.length() > 2) {
-            String captureRightCheckwho = whoIsAtLocationBackend(captureRight);
-            if (!captureRightCheckwho.equals("")) {
+            String captureRightCheckWho = whoIsAtLocationBackend(captureRight);
+            if (!captureRightCheckWho.equals("")) {
                 // if the pawn is white
                 if (pieces.get(name).name.substring(0, 1).equals("w")) {
-                    if (captureRightCheckwho.substring(0, 1).equals("2")) {
+                    if (captureRightCheckWho.substring(0, 1).equals("2")) {
                         checkCaptureRight = true;
 
                     }
                 }
                 // if the pawn is black
                 else if (pieces.get(name).name.substring(0, 1).equals("b")) {
-                    if (captureRightCheckwho.substring(0, 1).equals("1")) {
+                    if (captureRightCheckWho.substring(0, 1).equals("1")) {
                         checkCaptureRight = true;
 
                     }
@@ -1938,17 +2328,17 @@ public class board {
         boolean checkCaptureLeft = false;
 
         if (userInput.length() > 2) {
-            String captureLeftCheckwho = whoIsAtLocationBackend(captureLeft);
-            if (!captureLeftCheckwho.equals("")) {
+            String captureLeftCheckWho = whoIsAtLocationBackend(captureLeft);
+            if (!captureLeftCheckWho.equals("")) {
                 // if the pawn is white
                 if (pieces.get(name).name.substring(0, 1).equals("w")) {
-                    if (captureLeftCheckwho.substring(0, 1).equals("2")) {
+                    if (captureLeftCheckWho.substring(0, 1).equals("2")) {
                         checkCaptureLeft = true;
 
                     }
                 } else if (pieces.get(name).name.substring(0, 1).equals("b")) {
                     // if the pawn is black
-                    if (captureLeftCheckwho.substring(0, 1).equals("1")) {
+                    if (captureLeftCheckWho.substring(0, 1).equals("1")) {
                         checkCaptureLeft = true;
 
                     }
@@ -1977,33 +2367,33 @@ public class board {
 
     }
 
-    public void removePiece() {
+    public void removePiece(String location) {
         if (userInput.length() > 2) {
-            String whoGotCaptured = whoIsAtLocationBackend(userInput.substring(2, 4));
+            String whoGotCaptured = whoIsAtLocationBackend(location);
             if (!whoGotCaptured.equals("")) {
                 whoGotCaptured = whoGotCaptured.substring(1);
 
-                String letterOfwhoGotCaptured = whoIsAtLocation(pieces.get(whoGotCaptured).getLocation()).substring(1);
-                switch (letterOfwhoGotCaptured) {
+                String letterOfWhoGotCaptured = whoIsAtLocation(pieces.get(whoGotCaptured).getLocation()).substring(1);
+                switch (letterOfWhoGotCaptured) {
                     case "Q":
+                        decreasePieceCount("blackQueens");
 
-                        numberOfBlackQueens--;
                         break;
                     case "R":
+                        decreasePieceCount("blackRooks");
 
-                        numberOfBlackRooks--;
                         break;
                     case "N":
+                        decreasePieceCount("blackKnights");
 
-                        numberOfBlackKnights--;
                         break;
                     case "B":
+                        decreasePieceCount("blackBishops");
 
-                        numberOfBlackBishops--;
                         break;
                     case "P":
+                        decreasePieceCount("blackPawns");
 
-                        numberOfBlackPawns--;
                         break;
                     default:
                         break;
@@ -2015,6 +2405,16 @@ public class board {
     }
 
     public board() {
+        numberOfEachPiece.put("whitePawns", 8);
+        numberOfEachPiece.put("blackPawns", 8);
+        numberOfEachPiece.put("whiteRooks", 2);
+        numberOfEachPiece.put("blackRooks", 2);
+        numberOfEachPiece.put("whiteKnights", 2);
+        numberOfEachPiece.put("blackKnights", 2);
+        numberOfEachPiece.put("whiteBishops", 2);
+        numberOfEachPiece.put("blackBishops", 2);
+        numberOfEachPiece.put("whiteQueens", 1);
+        numberOfEachPiece.put("blackQueens", 1);
 
         createPieces();
         displayBoard();
@@ -2046,124 +2446,141 @@ public class board {
     }
 
     public String whoIsAtLocation(String location) {
-        for (int whatRook = 1, foundRooks = 0; foundRooks < numberOfWhiteRooks || whatRook <= 2; whatRook++) {
+
+        for (int whatRook = 1, foundRooks = 0,
+                whiteOrBlack = 0; foundRooks < numberOfEachPiece.get(whiteAndBlack[whiteOrBlack] + "Rooks")
+                        || whatRook <= 2; whatRook++) {
             try {
-                if (pieces.get("white rook - " + whatRook).location.equals(location)) {
-                    return "WR";
+                if (whiteOrBlack == 0) {
+                    if (pieces.get("white rook - " + whatRook).location.equals(location)) {
+                        return "WR";
+                    }
+                } else if (whiteOrBlack == 1) {
+                    if (pieces.get("black rook - " + whatRook).location.equals(location)) {
+                        return "BR";
+                    }
                 }
+
                 foundRooks++;
 
+                if (foundRooks < numberOfEachPiece.get(whiteAndBlack[0] + "Rooks")) {
+                } else if (whiteOrBlack == 0) {
+                    whiteOrBlack = 1;
+                    whatRook = 0;
+                    foundRooks = 0;
+
+                }
             } catch (Exception e) {
-                // TODO: handle exception
+
             }
         }
-        for (int whatRook = 1, foundRooks = 0; foundRooks < numberOfBlackRooks || whatRook <= 2; whatRook++) {
-            try {
-                if (pieces.get("black rook - " + whatRook).location.equals(location)) {
-                    return "BR";
-                }
-                foundRooks++;
 
-            } catch (Exception e) {
-                // TODO: handle exception
-            }
-        }
-        for (int whatPawn = 1, foundPawns = 0; foundPawns < numberOfWhitePawns || whatPawn <= 8; whatPawn++) {
+        for (int whatPawn = 1, foundPawns = 0,
+                whiteOrBlack = 0; foundPawns < numberOfEachPiece.get(whiteAndBlack[whiteOrBlack] + "Pawns")
+                        && whatPawn <= 8; whatPawn++) {
             try {
-
-                if (pieces.get("white pawn - " + whatPawn).location.equals(location)) {
-                    return "WP";
+                if (whiteOrBlack == 0) {
+                    if (pieces.get("white pawn - " + whatPawn).location.equals(location)) {
+                        return "WP";
+                    }
+                } else if (whiteOrBlack == 1) {
+                    if (pieces.get("black pawn - " + whatPawn).location.equals(location)) {
+                        return "BP";
+                    }
                 }
+
                 foundPawns++;
 
-            } catch (Exception e) {
+                if (foundPawns < numberOfEachPiece.get(whiteAndBlack[0] + "Pawns")) {
+                } else if (whiteOrBlack == 0) {
+                    whiteOrBlack = 1;
+                    whatPawn = 0;
+                    foundPawns = 0;
 
-            }
-        }
-
-        for (int whatPawn = 1, foundPawns = 0; foundPawns < numberOfBlackPawns || whatPawn <= 8; whatPawn++) {
-            try {
-
-                if (pieces.get("black pawn - " + whatPawn).location.equals(location)) {
-                    return "BP";
                 }
-                foundPawns++;
-
             } catch (Exception e) {
 
             }
         }
-        for (int whatKnight = 1, foundKnights = 0; foundKnights < numberOfWhiteKnights
-                || whatKnight <= 2; whatKnight++) {
-            try {
-                if (pieces.get("white knight - " + whatKnight).location.equals(location)) {
-                    return "WN";
-                }
-                foundKnights++;
 
-            } catch (Exception e) {
-
-            }
-        }
-        for (int whatKnight = 1, foundKnights = 0; foundKnights < numberOfBlackKnights
-                || whatKnight <= 2; whatKnight++) {
+        for (int whatKnight = 1, foundKnights = 0,
+                whiteOrBlack = 0; foundKnights < numberOfEachPiece.get(whiteAndBlack[whiteOrBlack] + "Knights")
+                        || whatKnight <= 2; whatKnight++) {
             try {
-                if (pieces.get("black knight - " + whatKnight).location.equals(location)) {
-                    return "BN";
+                if (whiteOrBlack == 0) {
+                    if (pieces.get("white knight - " + whatKnight).location.equals(location)) {
+                        return "WN";
+                    }
+                } else if (whiteOrBlack == 1) {
+                    if (pieces.get("black knight - " + whatKnight).location.equals(location)) {
+                        return "BN";
+                    }
                 }
                 foundKnights++;
+                if (foundKnights < numberOfEachPiece.get(whiteAndBlack[0] + "Knights")) {
+                } else if (whiteOrBlack == 0) {
+                    whiteOrBlack = 1;
+                    whatKnight = 0;
+                    foundKnights = 0;
 
+                }
             } catch (Exception e) {
 
             }
         }
 
-        for (int whatBishop = 1, foundBishops = 0; foundBishops < numberOfWhiteBishops
-                || whatBishop <= 2; whatBishop++) {
+        for (int whatBishop = 1, foundBishops = 0,
+                whiteOrBlack = 0; foundBishops < numberOfEachPiece.get(whiteAndBlack[whiteOrBlack] + "Bishops")
+                        || whatBishop <= 2; whatBishop++) {
             try {
-                if (pieces.get("white bishop - " + whatBishop).location.equals(location)) {
-                    return "WB";
+                if (whiteOrBlack == 0) {
+                    if (pieces.get("white bishop - " + whatBishop).location.equals(location)) {
+                        return "WB";
+                    }
+                } else if (whiteOrBlack == 1) {
+                    if (pieces.get("black bishop - " + whatBishop).location.equals(location)) {
+                        return "BB";
+                    }
                 }
                 foundBishops++;
+                if (foundBishops < numberOfEachPiece.get(whiteAndBlack[0] + "Bishops")) {
+                } else if (whiteOrBlack == 0) {
+                    whiteOrBlack = 1;
+                    whatBishop = 0;
+                    foundBishops = 0;
 
-            } catch (Exception e) {
-
-            }
-        }
-        for (int whatBishop = 1, foundBishops = 0; foundBishops < numberOfBlackBishops
-                || whatBishop <= 2; whatBishop++) {
-            try {
-                if (pieces.get("black bishop - " + whatBishop).location.equals(location)) {
-                    return "BB";
                 }
-                foundBishops++;
-
             } catch (Exception e) {
 
             }
         }
-        for (int whatQueen = 1, foundQueens = 0; foundQueens < numberOfWhiteQueens || whatQueen <= 1; whatQueen++) {
-            try {
-                if (pieces.get("white queen - " + whatQueen).location.equals(location)) {
-                    return "WQ";
-                }
-                foundQueens++;
 
-            } catch (Exception e) {
-
-            }
-        }
-        for (int whatQueen = 1, foundQueens = 0; foundQueens < numberOfBlackQueens || whatQueen <= 1; whatQueen++) {
+        for (int whatQueen = 1, foundQueens = 0,
+                whiteOrBlack = 0; foundQueens < numberOfEachPiece.get(whiteAndBlack[whiteOrBlack] + "Queens")
+                        || whatQueen <= 2; whatQueen++) {
             try {
-                if (pieces.get("black queen - " + whatQueen).location.equals(location)) {
-                    return "BQ";
+                if (whiteOrBlack == 0) {
+                    if (pieces.get("white queen - " + whatQueen).location.equals(location)) {
+                        return "WQ";
+                    }
+                } else if (whiteOrBlack == 1) {
+                    if (pieces.get("black queen - " + whatQueen).location.equals(location)) {
+                        return "BQ";
+                    }
                 }
                 foundQueens++;
+                if (foundQueens < numberOfEachPiece.get(whiteAndBlack[0] + "Queens")) {
+                } else if (whiteOrBlack == 0) {
+                    whiteOrBlack = 1;
+                    whatQueen = 0;
+                    foundQueens = 0;
 
+                }
             } catch (Exception e) {
 
             }
         }
+
         try {
             if (pieces.get("white king").location.equals(location)) {
                 return "WK";
@@ -2181,133 +2598,151 @@ public class board {
     }
 
     public String whoIsAtLocationBackend(String location) {
-        for (int whatRook = 1, foundRook = 0; foundRook < numberOfWhiteRooks || whatRook <= 2; whatRook++) {
+        for (int whatRook = 1, foundRooks = 0,
+                whiteOrBlack = 0; foundRooks < numberOfEachPiece.get(whiteAndBlack[whiteOrBlack] + "Rooks")
+                        || whatRook <= 2; whatRook++) {
             try {
-                if (pieces.get("white rook - " + whatRook).location.equals(location)) {
-                    return "1white rook - " + whatRook;
+                if (whiteOrBlack == 0) {
+                    if (pieces.get("white rook - " + whatRook).location.equals(location)) {
+                        return "1white rook - " + whatRook;
+                    }
+                } else if (whiteOrBlack == 1) {
+                    if (pieces.get("black rook - " + whatRook).location.equals(location)) {
+                        return "2black rook - " + whatRook;
+                    }
                 }
-                foundRook++;
 
+                foundRooks++;
+
+                if (foundRooks < numberOfEachPiece.get(whiteAndBlack[0] + "Rooks")) {
+                } else if (whiteOrBlack == 0) {
+                    whiteOrBlack = 1;
+                    whatRook = 0;
+                    foundRooks = 0;
+
+                }
             } catch (Exception e) {
 
             }
         }
-        for (int whatRook = 1, foundRook = 0; foundRook < numberOfBlackRooks || whatRook <= 2; whatRook++) {
-            try {
-                if (pieces.get("black rook - " + whatRook).location.equals(location)) {
-                    return "2black rook - " + whatRook;
-                }
-                foundRook++;
 
-            } catch (Exception e) {
-
-            }
-        }
-        for (int whatPawn = 1, foundPawns = 0; foundPawns < numberOfWhitePawns || whatPawn <= 8; whatPawn++) {
+        for (int whatPawn = 1, foundPawns = 0,
+                whiteOrBlack = 0; foundPawns < numberOfEachPiece.get(whiteAndBlack[whiteOrBlack] + "Pawns")
+                        && whatPawn <= 8; whatPawn++) {
             try {
-                if (pieces.get("white pawn - " + whatPawn).location.equals(location)) {
-                    return "1white pawn - " + whatPawn;
+                if (whiteOrBlack == 0) {
+                    if (pieces.get("white pawn - " + whatPawn).location.equals(location)) {
+                        return "1white pawn - " + whatPawn;
+                    }
+                } else if (whiteOrBlack == 1) {
+                    if (pieces.get("black pawn - " + whatPawn).location.equals(location)) {
+                        return "2black pawn - " + whatPawn;
+                    }
                 }
+
                 foundPawns++;
 
-            } catch (Exception e) {
+                if (foundPawns < numberOfEachPiece.get(whiteAndBlack[0] + "Pawns")) {
+                } else if (whiteOrBlack == 0) {
+                    whiteOrBlack = 1;
+                    whatPawn = 0;
+                    foundPawns = 0;
 
-            }
-        }
-        for (int whatPawn = 1, foundPawns = 0; foundPawns < numberOfBlackPawns || whatPawn <= 8; whatPawn++) {
-            try {
-                if (pieces.get("black pawn - " + whatPawn).location.equals(location)) {
-                    return "2black pawn - " + whatPawn;
                 }
-                foundPawns++;
-
             } catch (Exception e) {
 
             }
         }
-        for (int whatKnight = 1, foundKnights = 0; foundKnights < numberOfWhiteKnights
-                || whatKnight <= 2; whatKnight++) {
-            try {
-                if (pieces.get("white knight - " + whatKnight).location.equals(location)) {
-                    return "1white knight - " + whatKnight;
-                }
-                foundKnights++;
 
-            } catch (Exception e) {
-
-            }
-        }
-        for (int whatKnight = 1, foundKnights = 0; foundKnights < numberOfBlackKnights
-                || whatKnight <= 2; whatKnight++) {
+        for (int whatKnight = 1, foundKnights = 0,
+                whiteOrBlack = 0; foundKnights < numberOfEachPiece.get(whiteAndBlack[whiteOrBlack] + "Knights")
+                        || whatKnight <= 2; whatKnight++) {
             try {
-                if (pieces.get("black knight - " + whatKnight).location.equals(location)) {
-                    return "2black knight - " + whatKnight;
+                if (whiteOrBlack == 0) {
+                    if (pieces.get("white knight - " + whatKnight).location.equals(location)) {
+                        return "1white knight - " + whatKnight;
+                    }
+                } else if (whiteOrBlack == 1) {
+                    if (pieces.get("black knight - " + whatKnight).location.equals(location)) {
+                        return "2black knight - " + whatKnight;
+                    }
                 }
                 foundKnights++;
+                if (foundKnights < numberOfEachPiece.get(whiteAndBlack[0] + "Knights")) {
+                } else if (whiteOrBlack == 0) {
+                    whiteOrBlack = 1;
+                    whatKnight = 0;
+                    foundKnights = 0;
 
+                }
             } catch (Exception e) {
 
             }
         }
-        for (int whatBishop = 1, foundBishops = 0; foundBishops < numberOfWhiteBishops
-                || whatBishop <= 2; whatBishop++) {
+
+        for (int whatBishop = 1, foundBishops = 0,
+                whiteOrBlack = 0; foundBishops < numberOfEachPiece.get(whiteAndBlack[whiteOrBlack] + "Bishops")
+                        || whatBishop <= 2; whatBishop++) {
             try {
-                if (pieces.get("white bishop - " + whatBishop).location.equals(location)) {
-                    return "1white bishop - " + whatBishop;
+                if (whiteOrBlack == 0) {
+                    if (pieces.get("white bishop - " + whatBishop).location.equals(location)) {
+                        return "1white bishop - " + whatBishop;
+                    }
+                } else if (whiteOrBlack == 1) {
+                    if (pieces.get("black bishop - " + whatBishop).location.equals(location)) {
+                        return "2black bishop - " + whatBishop;
+                    }
                 }
                 foundBishops++;
+                if (foundBishops < numberOfEachPiece.get(whiteAndBlack[0] + "Bishops")) {
+                } else if (whiteOrBlack == 0) {
+                    whiteOrBlack = 1;
+                    whatBishop = 0;
+                    foundBishops = 0;
 
-            } catch (Exception e) {
-
-            }
-        }
-        for (int whatBishop = 1, foundBishops = 0; foundBishops < numberOfBlackBishops
-                || whatBishop <= 2; whatBishop++) {
-            try {
-                if (pieces.get("black bishop - " + whatBishop).location.equals(location)) {
-                    return "2black bishop - " + whatBishop;
                 }
-                foundBishops++;
-
             } catch (Exception e) {
 
             }
         }
-        for (int whatQueen = 1, foundQueens = 0; foundQueens < numberOfWhiteQueens || whatQueen <= 1; whatQueen++) {
-            try {
-                if (pieces.get("white queen - " + whatQueen).location.equals(location)) {
-                    return "1white queen - " + whatQueen;
-                }
-                foundQueens++;
 
-            } catch (Exception e) {
-
-            }
-        }
-        for (int whatQueen = 1, foundQueens = 0; foundQueens < numberOfBlackQueens || whatQueen <= 1; whatQueen++) {
+        for (int whatQueen = 1, foundQueens = 0,
+                whiteOrBlack = 0; foundQueens < numberOfEachPiece.get(whiteAndBlack[whiteOrBlack] + "Queens")
+                        || whatQueen <= 2; whatQueen++) {
             try {
-                if (pieces.get("black queen - " + whatQueen).location.equals(location)) {
-                    return "2black queen - " + whatQueen;
+                if (whiteOrBlack == 0) {
+                    if (pieces.get("white queen - " + whatQueen).location.equals(location)) {
+                        return "1white queen - " + whatQueen;
+                    }
+                } else if (whiteOrBlack == 1) {
+                    if (pieces.get("black queen - " + whatQueen).location.equals(location)) {
+                        return "2black queen - " + whatQueen;
+                    }
                 }
                 foundQueens++;
+                if (foundQueens < numberOfEachPiece.get(whiteAndBlack[0] + "Queens")) {
+                } else if (whiteOrBlack == 0) {
+                    whiteOrBlack = 1;
+                    whatQueen = 0;
+                    foundQueens = 0;
 
+                }
             } catch (Exception e) {
 
             }
         }
+
         try {
             if (pieces.get("white king").location.equals(location)) {
                 return "1white king";
             }
         } catch (Exception e) {
-
         }
         try {
             if (pieces.get("black king").location.equals(location)) {
                 return "2black king";
             }
         } catch (Exception e) {
-
         }
         return "";
 
@@ -2331,6 +2766,7 @@ public class board {
     private String decreaseLetter(Character letter) {
 
         char[] alphabet = "abcdefgh".toCharArray();
+
         if (letter != alphabet[0]) {
             for (int j = 0; j < alphabet.length; j++) {
                 if (letter == alphabet[j]) {
