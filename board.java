@@ -6,7 +6,6 @@ import java.util.Scanner;
 public class board {
     /*
      * todo
-     * black move
      * make moveByMove more modular
      * be able to import and export PGN
      * checks for check and mate on king
@@ -14,33 +13,35 @@ public class board {
      */
     public HashMap<String, pieces> pieces = new HashMap<String, pieces>();
     public HashMap<String, Integer> numberOfEachPiece = new HashMap<String, Integer>();
-    String[] whiteAndBlack = { "white", "black" };
+    String[] whiteAndBlack = { "white", "black", };
+    String whoseMove = "white";
     private Scanner in = new Scanner(System.in);
     private String userInput;
     public String PGN = "";
 
-    public void moveByMove(String whiteOrBlack) {
-
+    public void moveByMove() {
+        System.out.println("please enter the move for " + whoseMove);
         userInput = in.nextLine();
         char[] userInputArr = userInput.toCharArray();
         String[] letterArr = { "a", "b", "c", "d", "e", "f", "g", "h" };
         int[] numberArr = { 1, 2, 3, 4, 5, 6, 7, 8 };
         Boolean done = false;
+
         // its a pawn move
         if (userInput.length() == 2) {
-            for (int j = 1; j <= numberOfEachPiece.get("whitePawns"); j++) {
+            for (int j = 1; j <= numberOfEachPiece.get(whoseMove + "Pawns"); j++) {
                 try {
-                    pawnValidMoves("white pawn - " + j);
+                    pawnValidMoves(whoseMove + " pawn - " + j);
                 } catch (Exception e) {
 
                 }
 
             }
-            for (int j = 1; j <= numberOfEachPiece.get("whitePawns"); j++) {
+            for (int j = 1; j <= numberOfEachPiece.get(whoseMove + "Pawns"); j++) {
                 try {
-                    if (pieces.get("white pawn - " + j).validMoves.contains(userInput)) {
-                        pieces.get("white pawn - " + j).setLocation(userInput);
-                        pieces.get("white pawn - " + j).moreThenOnce = true;
+                    if (pieces.get(whoseMove + " pawn - " + j).validMoves.contains(userInput)) {
+                        pieces.get(whoseMove + " pawn - " + j).setLocation(userInput);
+                        pieces.get(whoseMove + " pawn - " + j).moreThenOnce = true;
                     }
                 } catch (Exception e) {
 
@@ -54,24 +55,24 @@ public class board {
         if (userInput.length() == 4 && userInputArr[1] == 'x') {
             for (int whatPawn = 1; whatPawn <= 8; whatPawn++) {
                 try {
-                    if (pieces.get("white pawn - " + whatPawn).getLocation().substring(0, 1)
+                    if (pieces.get(whoseMove + " pawn - " + whatPawn).getLocation().substring(0, 1)
                             .equals(userInput.subSequence(0, 1))) {
 
                         // now we know what pawn is capturing
 
                         // so then we need to find the pawn in the hashmap
 
-                        pawnValidMoves("white pawn - " + whatPawn);
+                        pawnValidMoves(whoseMove + " pawn - " + whatPawn);
                         // match user input to the pawns valid move
 
-                        for (int i = 0; i < pieces.get("white pawn - " + whatPawn).validMoves.size(); i++) {
+                        for (int i = 0; i < pieces.get(whoseMove + " pawn - " + whatPawn).validMoves.size(); i++) {
 
-                            if (pieces.get("white pawn - " + whatPawn).validMoves.get(i)
+                            if (pieces.get(whoseMove + " pawn - " + whatPawn).validMoves.get(i)
                                     .equals(userInput.substring(2))) {
 
                                 removePiece(userInput.substring(2));
-                                pieces.get("white pawn - " + whatPawn).setLocation(userInput.substring(2));
-                                pieces.get("white pawn - " + whatPawn).moreThenOnce = true;
+                                pieces.get(whoseMove + " pawn - " + whatPawn).setLocation(userInput.substring(2));
+                                pieces.get(whoseMove + " pawn - " + whatPawn).moreThenOnce = true;
                                 break;
 
                             }
@@ -90,22 +91,22 @@ public class board {
         if (userInput.length() == 4 && userInputArr[2] == '=') {
             for (int whatPawn = 1; whatPawn <= 8; whatPawn++) {
                 try {
-                    if (pieces.get("white pawn - " + whatPawn).getLocation().substring(0, 1)
+                    if (pieces.get(whoseMove + " pawn - " + whatPawn).getLocation().substring(0, 1)
                             .equals(userInput.subSequence(0, 1))) {
 
                         // now we know what pawn is capturing
 
                         // so then we need to find the pawn in the hashmap
 
-                        pawnValidMoves("white pawn - " + whatPawn);
+                        pawnValidMoves(whoseMove + " pawn - " + whatPawn);
                         // match user input to the pawns valid move
 
-                        for (int i = 0; i < pieces.get("white pawn - " + whatPawn).validMoves.size(); i++) {
+                        for (int i = 0; i < pieces.get(whoseMove + " pawn - " + whatPawn).validMoves.size(); i++) {
 
-                            if (pieces.get("white pawn - " + whatPawn).validMoves.get(i)
+                            if (pieces.get(whoseMove + " pawn - " + whatPawn).validMoves.get(i)
                                     .equals(userInput.substring(0, 2))) {
 
-                                pawnPromote("white pawn - " + whatPawn, true);
+                                pawnPromote(whoseMove + " pawn - " + whatPawn, true);
 
                                 break;
 
@@ -124,22 +125,22 @@ public class board {
         if (userInput.length() == 6 && userInputArr[4] == '=') {
             for (int whatPawn = 1; whatPawn <= 8; whatPawn++) {
                 try {
-                    if (pieces.get("white pawn - " + whatPawn).getLocation().substring(0, 1)
+                    if (pieces.get(whoseMove + " pawn - " + whatPawn).getLocation().substring(0, 1)
                             .equals(userInput.subSequence(0, 1))) {
 
                         // now we know what pawn is capturing
 
                         // so then we need to find the pawn in the hashmap
 
-                        pawnValidMoves("white pawn - " + whatPawn);
+                        pawnValidMoves(whoseMove + " pawn - " + whatPawn);
                         // match user input to the pawns valid move
 
-                        for (int i = 0; i < pieces.get("white pawn - " + whatPawn).validMoves.size(); i++) {
+                        for (int i = 0; i < pieces.get(whoseMove + " pawn - " + whatPawn).validMoves.size(); i++) {
 
-                            if (pieces.get("white pawn - " + whatPawn).validMoves.get(i)
+                            if (pieces.get(whoseMove + " pawn - " + whatPawn).validMoves.get(i)
                                     .equals(userInput.substring(2, 4))) {
                                 removePiece(userInput.substring(2, 4));
-                                pawnPromote("white pawn - " + whatPawn, false);
+                                pawnPromote(whoseMove + " pawn - " + whatPawn, false);
 
                                 break;
 
@@ -159,13 +160,13 @@ public class board {
             switch (userInputArr[0]) {
                 case 'K':
                     // find valid move for piece
-                    kingValidMove("white king");
+                    kingValidMove(whoseMove + " king");
                     // check if a valid move matches user input
                     for (int i = 0; i < 8; i++) {
                         try {
-                            if (pieces.get("white king").validMoves.get(i).equals(userInput.substring(1))) {
+                            if (pieces.get(whoseMove + " king").validMoves.get(i).equals(userInput.substring(1))) {
                                 // move the piece
-                                pieces.get("white king").setLocation(userInput.substring(1));
+                                pieces.get(whoseMove + " king").setLocation(userInput.substring(1));
                                 PGN += userInput;
                             }
                         } catch (Exception e) {
@@ -177,19 +178,20 @@ public class board {
                     break;
                 case 'Q':
                     // find valid move for piece
-                    for (int whatQueen = 1; whatQueen <= numberOfEachPiece.get("whiteQueens"); whatQueen++) {
+                    for (int whatQueen = 1; whatQueen <= numberOfEachPiece.get(whoseMove + "Queens"); whatQueen++) {
 
-                        queenValidMove("white queen - " + whatQueen);
+                        queenValidMove(whoseMove + " queen - " + whatQueen);
                     }
                     // check if a valid move matches user input
-                    for (int whatQueen = 1; whatQueen <= numberOfEachPiece.get("whiteQueens"); whatQueen++) {
+                    for (int whatQueen = 1; whatQueen <= numberOfEachPiece.get(whoseMove + "Queens"); whatQueen++) {
                         try {
-                            for (int validMove = 0; validMove < pieces.get("white queen - " + whatQueen).validMoves
+                            for (int validMove = 0; validMove < pieces
+                                    .get(whoseMove + " queen - " + whatQueen).validMoves
                                     .size(); validMove++) {
-                                if (pieces.get("white queen - " + whatQueen).validMoves.get(validMove)
+                                if (pieces.get(whoseMove + " queen - " + whatQueen).validMoves.get(validMove)
                                         .equals(userInput.substring(1))) {
                                     // move the piece
-                                    pieces.get("white queen - " + whatQueen).setLocation(userInput.substring(1));
+                                    pieces.get(whoseMove + " queen - " + whatQueen).setLocation(userInput.substring(1));
                                 }
                             }
                         } catch (Exception e) {
@@ -200,19 +202,19 @@ public class board {
                     break;
                 case 'N':
                     // find valid move for piece
-                    for (int whatKnight = 1; whatKnight <= numberOfEachPiece.get("whiteKnights"); whatKnight++) {
-                        knightValidMove("white knight - " + whatKnight);
+                    for (int whatKnight = 1; whatKnight <= numberOfEachPiece.get(whoseMove + "Knights"); whatKnight++) {
+                        knightValidMove(whoseMove + " knight - " + whatKnight);
                     }
 
                     // check if a valid move matches user input
 
-                    for (int j = 1; j <= numberOfEachPiece.get("whiteKnights"); j++) {
+                    for (int j = 1; j <= numberOfEachPiece.get(whoseMove + "Knights"); j++) {
                         try {
-                            for (int i = 0; i < pieces.get("white knight - " + j).validMoves.size(); i++) {
-                                if (pieces.get("white knight - " + j).validMoves.get(i)
+                            for (int i = 0; i < pieces.get(whoseMove + " knight - " + j).validMoves.size(); i++) {
+                                if (pieces.get(whoseMove + " knight - " + j).validMoves.get(i)
                                         .equals(userInput.substring(1))) {
                                     // move the piece
-                                    pieces.get("white knight - " + j).setLocation(userInput.substring(1));
+                                    pieces.get(whoseMove + " knight - " + j).setLocation(userInput.substring(1));
                                 }
                             }
                         } catch (Exception e) {
@@ -223,9 +225,9 @@ public class board {
                     break;
                 case 'B':
                     // find valid move for piece
-                    for (int i = 1; i <= numberOfEachPiece.get("whiteBishops"); i++) {
+                    for (int i = 1; i <= numberOfEachPiece.get(whoseMove + "Bishops"); i++) {
                         try {
-                            bishopValidMove("white bishop - " + i);
+                            bishopValidMove(whoseMove + " bishop - " + i);
 
                         } catch (Exception e) {
 
@@ -233,13 +235,15 @@ public class board {
                     }
 
                     // check if a valid move matches user input
-                    for (int whatBishop = 1; whatBishop <= numberOfEachPiece.get("whiteBishops"); whatBishop++) {
+                    for (int whatBishop = 1; whatBishop <= numberOfEachPiece.get(whoseMove + "Bishops"); whatBishop++) {
                         try {
-                            for (int i = 0; i < pieces.get("white bishop - " + whatBishop).validMoves.size(); i++) {
-                                if (pieces.get("white bishop - " + whatBishop).validMoves.get(i)
+                            for (int i = 0; i < pieces.get(whoseMove + " bishop - " + whatBishop).validMoves
+                                    .size(); i++) {
+                                if (pieces.get(whoseMove + " bishop - " + whatBishop).validMoves.get(i)
                                         .equals(userInput.substring(1))) {
                                     // move the piece
-                                    pieces.get("white bishop - " + whatBishop).setLocation(userInput.substring(1));
+                                    pieces.get(whoseMove + " bishop - " + whatBishop)
+                                            .setLocation(userInput.substring(1));
                                 }
                             }
                         } catch (Exception e) {
@@ -253,19 +257,20 @@ public class board {
                     // find valid move for piece
                     for (int i = 0; i < numberArr.length; i++) {
                         try {
-                            rookValidMove("white rook - " + i);
+                            rookValidMove(whoseMove + " rook - " + i);
                         } catch (Exception e) {
 
                         }
                     }
 
                     // check if a valid move matches user input
-                    for (int i = 1; i <= numberOfEachPiece.get("whiteRooks"); i++) {
+                    for (int i = 1; i <= numberOfEachPiece.get(whoseMove + "Rooks"); i++) {
                         try {
-                            for (int k = 0; k < pieces.get("white rook - " + i).validMoves.size(); k++) {
-                                if (pieces.get("white rook - " + i).validMoves.get(k).equals(userInput.substring(1))) {
+                            for (int k = 0; k < pieces.get(whoseMove + " rook - " + i).validMoves.size(); k++) {
+                                if (pieces.get(whoseMove + " rook - " + i).validMoves.get(k)
+                                        .equals(userInput.substring(1))) {
                                     // move the piece
-                                    pieces.get("white rook - " + i).setLocation(userInput.substring(1));
+                                    pieces.get(whoseMove + " rook - " + i).setLocation(userInput.substring(1));
                                 }
                             }
                         } catch (Exception e) {
@@ -284,16 +289,16 @@ public class board {
             switch (userInputArr[0]) {
                 case 'K':
                     // find valid move for piece
-                    kingValidMove("white king");
+                    kingValidMove(whoseMove + " king");
 
                     // check if a valid move matches user input
                     for (int i = 0; i < 8; i++) {
                         try {
-                            if (pieces.get("white king").validMoves.get(i).equals(userInput.substring(2))) {
+                            if (pieces.get(whoseMove + " king").validMoves.get(i).equals(userInput.substring(2))) {
                                 // remove the captured piece\
                                 removePiece(userInput.substring(2));
                                 // move the piece
-                                pieces.get("white king").setLocation(userInput.substring(2));
+                                pieces.get(whoseMove + " king").setLocation(userInput.substring(2));
                                 PGN += userInput;
                                 break;
                             }
@@ -305,24 +310,25 @@ public class board {
                     break;
                 case 'Q':
                     // find valid move for piece
-                    for (int i = 1; i <= numberOfEachPiece.get("whiteQueens"); i++) {
+                    for (int i = 1; i <= numberOfEachPiece.get(whoseMove + "Queens"); i++) {
 
-                        queenValidMove("white queen - " + i);
+                        queenValidMove(whoseMove + " queen - " + i);
                     }
 
                     // check if a valid move matches user input
                     for (int whatQueen = 0; whatQueen < numberArr.length; whatQueen++) {
                         try {
                             for (int whatValidMove = 0; whatValidMove < pieces
-                                    .get("white queen - " + whatQueen).validMoves
+                                    .get(whoseMove + " queen - " + whatQueen).validMoves
                                     .size(); whatValidMove++) {
                                 try {
-                                    if (pieces.get("white queen - " + whatQueen).validMoves.get(whatValidMove)
+                                    if (pieces.get(whoseMove + " queen - " + whatQueen).validMoves.get(whatValidMove)
                                             .equals(userInput.substring(2))) {
                                         // remove the captured piece\
                                         removePiece(userInput.substring(2));
                                         // move the piece
-                                        pieces.get("white queen - " + whatQueen).setLocation(userInput.substring(2));
+                                        pieces.get(whoseMove + " queen - " + whatQueen)
+                                                .setLocation(userInput.substring(2));
 
                                         break;
                                     }
@@ -339,20 +345,22 @@ public class board {
                     break;
                 case 'N':
                     // find valid move for piece
-                    for (int whatKnight = 1; whatKnight <= numberOfEachPiece.get("whiteKnights"); whatKnight++) {
-                        knightValidMove("white knight - " + whatKnight);
+                    for (int whatKnight = 1; whatKnight <= numberOfEachPiece.get(whoseMove + "Knights"); whatKnight++) {
+                        knightValidMove(whoseMove + " knight - " + whatKnight);
                     }
 
                     // check if a valid move matches user input
 
-                    for (int whatKnight = 1; whatKnight <= numberOfEachPiece.get("whiteKnights"); whatKnight++) {
+                    for (int whatKnight = 1; whatKnight <= numberOfEachPiece.get(whoseMove + "Knights"); whatKnight++) {
                         try {
-                            for (int i = 0; i < pieces.get("white knight - " + whatKnight).validMoves.size(); i++) {
-                                if (pieces.get("white knight - " + whatKnight).validMoves.get(i)
+                            for (int i = 0; i < pieces.get(whoseMove + " knight - " + whatKnight).validMoves
+                                    .size(); i++) {
+                                if (pieces.get(whoseMove + " knight - " + whatKnight).validMoves.get(i)
                                         .equals(userInput.substring(2))) {
                                     // move the piece
                                     removePiece(userInput.substring(2));
-                                    pieces.get("white knight - " + whatKnight).setLocation(userInput.substring(2));
+                                    pieces.get(whoseMove + " knight - " + whatKnight)
+                                            .setLocation(userInput.substring(2));
                                 }
                             }
                         } catch (Exception e) {
@@ -363,9 +371,9 @@ public class board {
                     break;
                 case 'B':
                     // find valid move for piece
-                    for (int whatBishop = 1; whatBishop <= numberOfEachPiece.get("whiteBishops"); whatBishop++) {
+                    for (int whatBishop = 1; whatBishop <= numberOfEachPiece.get(whoseMove + "Bishops"); whatBishop++) {
                         try {
-                            bishopValidMove("white bishop - " + whatBishop);
+                            bishopValidMove(whoseMove + " bishop - " + whatBishop);
 
                         } catch (Exception e) {
 
@@ -373,15 +381,17 @@ public class board {
                     }
 
                     // check if a valid move matches user input
-                    for (int whatBishop = 1; whatBishop <= numberOfEachPiece.get("whiteBishops"); whatBishop++) {
+                    for (int whatBishop = 1; whatBishop <= numberOfEachPiece.get(whoseMove + "Bishops"); whatBishop++) {
                         try {
-                            for (int validMove = 0; validMove < pieces.get("white bishop - " + whatBishop).validMoves
+                            for (int validMove = 0; validMove < pieces
+                                    .get(whoseMove + " bishop - " + whatBishop).validMoves
                                     .size(); validMove++) {
-                                if (pieces.get("white bishop - " + whatBishop).validMoves.get(validMove)
+                                if (pieces.get(whoseMove + " bishop - " + whatBishop).validMoves.get(validMove)
                                         .equals(userInput.substring(2))) {
                                     removePiece(userInput.substring(2));
                                     // move the piece
-                                    pieces.get("white bishop - " + whatBishop).setLocation(userInput.substring(2));
+                                    pieces.get(whoseMove + " bishop - " + whatBishop)
+                                            .setLocation(userInput.substring(2));
                                 }
                             }
                         } catch (Exception e) {
@@ -391,24 +401,24 @@ public class board {
                     }
                     break;
                 case 'R':
-                    for (int whatRook = 1; whatRook <= numberOfEachPiece.get("whiteRooks"); whatRook++) {
+                    for (int whatRook = 1; whatRook <= numberOfEachPiece.get(whoseMove + "Rooks"); whatRook++) {
 
                         try {
-                            rookValidMove("white rook - " + whatRook);
+                            rookValidMove(whoseMove + " rook - " + whatRook);
                         } catch (Exception e) {
 
                         }
                     }
 
-                    for (int whatRook = 1; whatRook <= numberOfEachPiece.get("whiteRooks"); whatRook++) {
+                    for (int whatRook = 1; whatRook <= numberOfEachPiece.get(whoseMove + "Rooks"); whatRook++) {
                         // check if a valid move matches user input
                         try {
-                            for (int i = 0; i < pieces.get("white rook - " + whatRook).validMoves.size(); i++) {
-                                if (pieces.get("white rook - " + whatRook).validMoves.get(i)
+                            for (int i = 0; i < pieces.get(whoseMove + " rook - " + whatRook).validMoves.size(); i++) {
+                                if (pieces.get(whoseMove + " rook - " + whatRook).validMoves.get(i)
                                         .equals(userInput.substring(2))) {
                                     // move the piece
                                     removePiece(userInput.substring(2));
-                                    pieces.get("white rook - " + whatRook).setLocation(userInput.substring(2));
+                                    pieces.get(whoseMove + " rook - " + whatRook).setLocation(userInput.substring(2));
                                 }
                             }
                         } catch (Exception e) {
@@ -432,22 +442,23 @@ public class board {
                     // letter look
                     for (int LetterLocation = 0; LetterLocation < letterArr.length && !done; LetterLocation++) {
                         if (userInput.substring(1, 2).equals(letterArr[LetterLocation])) {
-                            for (int whatQueen = 1; whatQueen <= numberOfEachPiece.get("whiteQueens")
+                            for (int whatQueen = 1; whatQueen <= numberOfEachPiece.get(whoseMove + "Queens")
                                     && !done; whatQueen++) {
                                 try {
-                                    if (pieces.get("white queen - " + whatQueen).getLocation().substring(0, 1)
+                                    if (pieces.get(whoseMove + " queen - " + whatQueen).getLocation().substring(0, 1)
                                             .equals(userInput.substring(1, 2))) {
-                                        queenValidMove("white queen - " + whatQueen);
+                                        queenValidMove(whoseMove + " queen - " + whatQueen);
 
                                         try {
-                                            for (int a = 0; a < pieces.get("white queen - " + whatQueen).validMoves
+                                            for (int a = 0; a < pieces
+                                                    .get(whoseMove + " queen - " + whatQueen).validMoves
                                                     .size()
                                                     && !done; a++) {
-                                                if (pieces.get("white queen - " + whatQueen).validMoves.get(a)
+                                                if (pieces.get(whoseMove + " queen - " + whatQueen).validMoves.get(a)
                                                         .equals(userInput.substring(2))) {
                                                     // move the piece
 
-                                                    pieces.get("white queen - " + whatQueen)
+                                                    pieces.get(whoseMove + " queen - " + whatQueen)
                                                             .setLocation(userInput.substring(2));
                                                     done = true;
                                                 }
@@ -469,22 +480,24 @@ public class board {
                     try {
                         for (int numberLocation = 1; numberLocation < numberArr.length && !done; numberLocation++) {
                             if (Integer.parseInt(userInput.substring(1, 2)) == numberArr[numberLocation]) {
-                                for (int whatQueen = 1; whatQueen <= numberOfEachPiece.get("whiteQueens")
+                                for (int whatQueen = 1; whatQueen <= numberOfEachPiece.get(whoseMove + "Queens")
                                         && !done; whatQueen++) {
                                     try {
-                                        if (pieces.get("white queen - " + whatQueen).getLocation().substring(1, 2)
+                                        if (pieces.get(whoseMove + " queen - " + whatQueen).getLocation()
+                                                .substring(1, 2)
                                                 .equals(userInput.substring(1, 2))) {
-                                            queenValidMove("white queen - " + whatQueen);
+                                            queenValidMove(whoseMove + " queen - " + whatQueen);
 
                                             try {
                                                 for (int a = 0; a < pieces
-                                                        .get("white queen - " + whatQueen).validMoves
+                                                        .get(whoseMove + " queen - " + whatQueen).validMoves
                                                         .size() && !done; a++) {
-                                                    if (pieces.get("white queen - " + whatQueen).validMoves.get(a)
+                                                    if (pieces.get(whoseMove + " queen - " + whatQueen).validMoves
+                                                            .get(a)
                                                             .equals(userInput.substring(2))) {
                                                         // move the piece
 
-                                                        pieces.get("white queen - " + whatQueen)
+                                                        pieces.get(whoseMove + " queen - " + whatQueen)
                                                                 .setLocation(userInput.substring(2));
                                                         done = true;
                                                         break;
@@ -513,22 +526,23 @@ public class board {
                     // letter look
                     for (int LetterLocation = 0; LetterLocation < letterArr.length && !done; LetterLocation++) {
                         if (userInput.substring(1, 2).equals(letterArr[LetterLocation])) {
-                            for (int whatKnight = 1; whatKnight <= numberOfEachPiece.get("whiteKnights")
+                            for (int whatKnight = 1; whatKnight <= numberOfEachPiece.get(whoseMove + "Knights")
                                     && !done; whatKnight++) {
                                 try {
-                                    if (pieces.get("white knight - " + whatKnight).getLocation().substring(0, 1)
+                                    if (pieces.get(whoseMove + " knight - " + whatKnight).getLocation().substring(0, 1)
                                             .equals(userInput.substring(1, 2))) {
-                                        knightValidMove("white knight - " + whatKnight);
+                                        knightValidMove(whoseMove + " knight - " + whatKnight);
 
                                         try {
-                                            for (int a = 0; a < pieces.get("white knight - " + whatKnight).validMoves
+                                            for (int a = 0; a < pieces
+                                                    .get(whoseMove + " knight - " + whatKnight).validMoves
                                                     .size()
                                                     && !done; a++) {
-                                                if (pieces.get("white knight - " + whatKnight).validMoves.get(a)
+                                                if (pieces.get(whoseMove + " knight - " + whatKnight).validMoves.get(a)
                                                         .equals(userInput.substring(2))) {
                                                     // move the piece
 
-                                                    pieces.get("white knight - " + whatKnight)
+                                                    pieces.get(whoseMove + " knight - " + whatKnight)
                                                             .setLocation(userInput.substring(2));
                                                     done = true;
                                                 }
@@ -550,22 +564,24 @@ public class board {
                     try {
                         for (int numberLocation = 1; numberLocation < numberArr.length && !done; numberLocation++) {
                             if (Integer.parseInt(userInput.substring(1, 2)) == numberArr[numberLocation - 1]) {
-                                for (int whatKnight = 1; whatKnight <= numberOfEachPiece.get("whiteKnights")
+                                for (int whatKnight = 1; whatKnight <= numberOfEachPiece.get(whoseMove + "Knights")
                                         && !done; whatKnight++) {
                                     try {
-                                        if (pieces.get("white knight - " + whatKnight).getLocation().substring(1, 2)
+                                        if (pieces.get(whoseMove + " knight - " + whatKnight).getLocation()
+                                                .substring(1, 2)
                                                 .equals(userInput.substring(1, 2))) {
-                                            knightValidMove("white knight - " + whatKnight);
+                                            knightValidMove(whoseMove + " knight - " + whatKnight);
 
                                             try {
                                                 for (int a = 0; a < pieces
-                                                        .get("white knight - " + whatKnight).validMoves
+                                                        .get(whoseMove + " knight - " + whatKnight).validMoves
                                                         .size() && !done; a++) {
-                                                    if (pieces.get("white knight - " + whatKnight).validMoves.get(a)
+                                                    if (pieces.get(whoseMove + " knight - " + whatKnight).validMoves
+                                                            .get(a)
                                                             .equals(userInput.substring(2))) {
                                                         // move the piece
 
-                                                        pieces.get("white knight - " + whatKnight)
+                                                        pieces.get(whoseMove + " knight - " + whatKnight)
                                                                 .setLocation(userInput.substring(2));
                                                         done = true;
                                                         break;
@@ -596,21 +612,22 @@ public class board {
                     // letter look
                     for (int LetterLocation = 0; LetterLocation < letterArr.length && !done; LetterLocation++) {
                         if (userInput.substring(1, 2).equals(letterArr[LetterLocation])) {
-                            for (int whatBishop = 1; whatBishop <= numberOfEachPiece.get("whiteBishops")
+                            for (int whatBishop = 1; whatBishop <= numberOfEachPiece.get(whoseMove + "Bishops")
                                     && !done; whatBishop++) {
                                 try {
-                                    if (pieces.get("white bishop - " + whatBishop).getLocation().substring(0, 1)
+                                    if (pieces.get(whoseMove + " bishop - " + whatBishop).getLocation().substring(0, 1)
                                             .equals(userInput.substring(1, 2))) {
-                                        bishopValidMove("white bishop - " + whatBishop);
+                                        bishopValidMove(whoseMove + " bishop - " + whatBishop);
                                         try {
-                                            for (int a = 0; a < pieces.get("white bishop - " + whatBishop).validMoves
+                                            for (int a = 0; a < pieces
+                                                    .get(whoseMove + " bishop - " + whatBishop).validMoves
                                                     .size()
                                                     && !done; a++) {
-                                                if (pieces.get("white bishop - " + whatBishop).validMoves.get(a)
+                                                if (pieces.get(whoseMove + " bishop - " + whatBishop).validMoves.get(a)
                                                         .equals(userInput.substring(2))) {
                                                     // move the piece
 
-                                                    pieces.get("white bishop - " + whatBishop)
+                                                    pieces.get(whoseMove + " bishop - " + whatBishop)
                                                             .setLocation(userInput.substring(2));
                                                     done = true;
                                                 }
@@ -631,22 +648,24 @@ public class board {
                     try {
                         for (int numberLocation = 1; numberLocation < numberArr.length && !done; numberLocation++) {
                             if (Integer.parseInt(userInput.substring(1, 2)) == numberArr[numberLocation - 1]) {
-                                for (int whatBishop = 1; whatBishop <= numberOfEachPiece.get("whiteBishops")
+                                for (int whatBishop = 1; whatBishop <= numberOfEachPiece.get(whoseMove + "Bishops")
                                         && !done; whatBishop++) {
                                     try {
-                                        if (pieces.get("white bishop - " + whatBishop).getLocation().substring(1, 2)
+                                        if (pieces.get(whoseMove + " bishop - " + whatBishop).getLocation()
+                                                .substring(1, 2)
                                                 .equals(userInput.substring(1, 2))) {
-                                            bishopValidMove("white bishop - " + whatBishop);
+                                            bishopValidMove(whoseMove + " bishop - " + whatBishop);
 
                                             try {
                                                 for (int a = 0; a < pieces
-                                                        .get("white bishop - " + whatBishop).validMoves
+                                                        .get(whoseMove + " bishop - " + whatBishop).validMoves
                                                         .size() && !done; a++) {
-                                                    if (pieces.get("white bishop - " + whatBishop).validMoves.get(a)
+                                                    if (pieces.get(whoseMove + " bishop - " + whatBishop).validMoves
+                                                            .get(a)
                                                             .equals(userInput.substring(2))) {
                                                         // move the piece
 
-                                                        pieces.get("white bishop - " + whatBishop)
+                                                        pieces.get(whoseMove + " bishop - " + whatBishop)
                                                                 .setLocation(userInput.substring(2));
                                                         done = true;
                                                         break;
@@ -677,21 +696,21 @@ public class board {
                     // letter look
                     for (int LetterLocation = 0; LetterLocation < letterArr.length && !done; LetterLocation++) {
                         if (userInput.substring(1, 2).equals(letterArr[LetterLocation])) {
-                            for (int whatRook = 1; whatRook <= numberOfEachPiece.get("whiteBishops")
+                            for (int whatRook = 1; whatRook <= numberOfEachPiece.get(whoseMove + "Bishops")
                                     && !done; whatRook++) {
                                 try {
-                                    if (pieces.get("white rook - " + whatRook).getLocation().substring(0, 1)
+                                    if (pieces.get(whoseMove + " rook - " + whatRook).getLocation().substring(0, 1)
                                             .equals(userInput.substring(1, 2))) {
-                                        rookValidMove("white rook - " + whatRook);
+                                        rookValidMove(whoseMove + " rook - " + whatRook);
                                         try {
-                                            for (int a = 0; a < pieces.get("white rook - " + whatRook).validMoves
+                                            for (int a = 0; a < pieces.get(whoseMove + " rook - " + whatRook).validMoves
                                                     .size()
                                                     && !done; a++) {
-                                                if (pieces.get("white rook - " + whatRook).validMoves.get(a)
+                                                if (pieces.get(whoseMove + " rook - " + whatRook).validMoves.get(a)
                                                         .equals(userInput.substring(2))) {
                                                     // move the piece
 
-                                                    pieces.get("white rook - " + whatRook)
+                                                    pieces.get(whoseMove + " rook - " + whatRook)
                                                             .setLocation(userInput.substring(2));
                                                     done = true;
                                                 }
@@ -712,21 +731,22 @@ public class board {
                     try {
                         for (int numberLocation = 1; numberLocation < numberArr.length && !done; numberLocation++) {
                             if (Integer.parseInt(userInput.substring(1, 2)) == numberArr[numberLocation - 1]) {
-                                for (int whatRook = 1; whatRook <= numberOfEachPiece.get("whiteRooks")
+                                for (int whatRook = 1; whatRook <= numberOfEachPiece.get(whoseMove + "Rooks")
                                         && !done; whatRook++) {
                                     try {
-                                        if (pieces.get("white rook - " + whatRook).getLocation().substring(1, 2)
+                                        if (pieces.get(whoseMove + " rook - " + whatRook).getLocation().substring(1, 2)
                                                 .equals(userInput.substring(1, 2))) {
-                                            rookValidMove("white rook - " + whatRook);
+                                            rookValidMove(whoseMove + " rook - " + whatRook);
 
                                             try {
-                                                for (int a = 0; a < pieces.get("white rook - " + whatRook).validMoves
+                                                for (int a = 0; a < pieces
+                                                        .get(whoseMove + " rook - " + whatRook).validMoves
                                                         .size() && !done; a++) {
-                                                    if (pieces.get("white rook - " + whatRook).validMoves.get(a)
+                                                    if (pieces.get(whoseMove + " rook - " + whatRook).validMoves.get(a)
                                                             .equals(userInput.substring(2))) {
                                                         // move the piece
 
-                                                        pieces.get("white rook - " + whatRook)
+                                                        pieces.get(whoseMove + " rook - " + whatRook)
                                                                 .setLocation(userInput.substring(2));
                                                         done = true;
                                                         break;
@@ -765,22 +785,23 @@ public class board {
                     // letter look
                     for (int LetterLocation = 0; LetterLocation < letterArr.length && !done; LetterLocation++) {
                         if (userInput.substring(1, 2).equals(letterArr[LetterLocation])) {
-                            for (int whatQueen = 1; whatQueen <= numberOfEachPiece.get("whiteQueens")
+                            for (int whatQueen = 1; whatQueen <= numberOfEachPiece.get(whoseMove + "Queens")
                                     && !done; whatQueen++) {
                                 try {
-                                    if (pieces.get("white queen - " + whatQueen).getLocation().substring(0, 1)
+                                    if (pieces.get(whoseMove + " queen - " + whatQueen).getLocation().substring(0, 1)
                                             .equals(userInput.substring(1, 2))) {
-                                        queenValidMove("white queen - " + whatQueen);
+                                        queenValidMove(whoseMove + " queen - " + whatQueen);
 
                                         try {
-                                            for (int a = 0; a < pieces.get("white queen - " + whatQueen).validMoves
+                                            for (int a = 0; a < pieces
+                                                    .get(whoseMove + " queen - " + whatQueen).validMoves
                                                     .size()
                                                     && !done; a++) {
-                                                if (pieces.get("white queen - " + whatQueen).validMoves.get(a)
+                                                if (pieces.get(whoseMove + " queen - " + whatQueen).validMoves.get(a)
                                                         .equals(userInput.substring(3))) {
                                                     // move the piece
 
-                                                    pieces.get("white queen - " + whatQueen)
+                                                    pieces.get(whoseMove + " queen - " + whatQueen)
                                                             .setLocation(userInput.substring(3));
                                                     done = true;
                                                 }
@@ -802,21 +823,23 @@ public class board {
                     try {
                         for (int numberLocation = 1; numberLocation < numberArr.length && !done; numberLocation++) {
                             if (Integer.parseInt(userInput.substring(1, 2)) == numberArr[numberLocation - 1]) {
-                                for (int whatQueen = 1; whatQueen <= numberOfEachPiece.get("whiteQueens")
+                                for (int whatQueen = 1; whatQueen <= numberOfEachPiece.get(whoseMove + "Queens")
                                         && !done; whatQueen++) {
                                     try {
-                                        if (pieces.get("white queen - " + whatQueen).getLocation().substring(1, 2)
+                                        if (pieces.get(whoseMove + " queen - " + whatQueen).getLocation()
+                                                .substring(1, 2)
                                                 .equals(userInput.substring(1, 2))) {
-                                            queenValidMove("white queen - " + whatQueen);
+                                            queenValidMove(whoseMove + " queen - " + whatQueen);
 
                                             try {
                                                 for (int a = 0; a < pieces
-                                                        .get("white queen - " + whatQueen).validMoves
+                                                        .get(whoseMove + " queen - " + whatQueen).validMoves
                                                         .size() && !done; a++) {
-                                                    if (pieces.get("white queen - " + whatQueen).validMoves.get(a)
+                                                    if (pieces.get(whoseMove + " queen - " + whatQueen).validMoves
+                                                            .get(a)
                                                             .equals(userInput.substring(3))) {
                                                         // move the piece
-                                                        pieces.get("white queen - " + whatQueen)
+                                                        pieces.get(whoseMove + " queen - " + whatQueen)
                                                                 .setLocation(userInput.substring(3));
                                                         done = true;
                                                         break;
@@ -845,22 +868,23 @@ public class board {
                     // letter look
                     for (int LetterLocation = 0; LetterLocation < letterArr.length && !done; LetterLocation++) {
                         if (userInput.substring(1, 2).equals(letterArr[LetterLocation])) {
-                            for (int whatKnight = 1; whatKnight <= numberOfEachPiece.get("whiteKnights")
+                            for (int whatKnight = 1; whatKnight <= numberOfEachPiece.get(whoseMove + "Knights")
                                     && !done; whatKnight++) {
                                 try {
-                                    if (pieces.get("white knight - " + whatKnight).getLocation().substring(0, 1)
+                                    if (pieces.get(whoseMove + " knight - " + whatKnight).getLocation().substring(0, 1)
                                             .equals(userInput.substring(1, 2))) {
-                                        knightValidMove("white knight - " + whatKnight);
+                                        knightValidMove(whoseMove + " knight - " + whatKnight);
 
                                         try {
-                                            for (int a = 0; a < pieces.get("white knight - " + whatKnight).validMoves
+                                            for (int a = 0; a < pieces
+                                                    .get(whoseMove + " knight - " + whatKnight).validMoves
                                                     .size()
                                                     && !done; a++) {
-                                                if (pieces.get("white knight - " + whatKnight).validMoves.get(a)
+                                                if (pieces.get(whoseMove + " knight - " + whatKnight).validMoves.get(a)
                                                         .equals(userInput.substring(3))) {
                                                     // move the piece
 
-                                                    pieces.get("white knight - " + whatKnight)
+                                                    pieces.get(whoseMove + " knight - " + whatKnight)
                                                             .setLocation(userInput.substring(3));
                                                     done = true;
                                                 }
@@ -882,22 +906,24 @@ public class board {
                     try {
                         for (int numberLocation = 1; numberLocation < numberArr.length && !done; numberLocation++) {
                             if (Integer.parseInt(userInput.substring(1, 2)) == numberArr[numberLocation - 1]) {
-                                for (int whatKnight = 1; whatKnight <= numberOfEachPiece.get("whitePawns")
+                                for (int whatKnight = 1; whatKnight <= numberOfEachPiece.get(whoseMove + "Pawns")
                                         && !done; whatKnight++) {
                                     try {
-                                        if (pieces.get("white knight - " + whatKnight).getLocation().substring(1, 2)
+                                        if (pieces.get(whoseMove + " knight - " + whatKnight).getLocation()
+                                                .substring(1, 2)
                                                 .equals(userInput.substring(1, 2))) {
-                                            knightValidMove("white knight - " + whatKnight);
+                                            knightValidMove(whoseMove + " knight - " + whatKnight);
 
                                             try {
                                                 for (int a = 0; a < pieces
-                                                        .get("white knight - " + whatKnight).validMoves
+                                                        .get(whoseMove + " knight - " + whatKnight).validMoves
                                                         .size() && !done; a++) {
-                                                    if (pieces.get("white knight - " + whatKnight).validMoves.get(a)
+                                                    if (pieces.get(whoseMove + " knight - " + whatKnight).validMoves
+                                                            .get(a)
                                                             .equals(userInput.substring(3))) {
                                                         // move the piece
 
-                                                        pieces.get("white knight - " + whatKnight)
+                                                        pieces.get(whoseMove + " knight - " + whatKnight)
                                                                 .setLocation(userInput.substring(3));
                                                         done = true;
                                                         break;
@@ -928,21 +954,22 @@ public class board {
                     // letter look
                     for (int LetterLocation = 0; LetterLocation < letterArr.length && !done; LetterLocation++) {
                         if (userInput.substring(1, 2).equals(letterArr[LetterLocation])) {
-                            for (int whatBishop = 1; whatBishop <= numberOfEachPiece.get("whiteBishops")
+                            for (int whatBishop = 1; whatBishop <= numberOfEachPiece.get(whoseMove + "Bishops")
                                     && !done; whatBishop++) {
                                 try {
-                                    if (pieces.get("white bishop - " + whatBishop).getLocation().substring(0, 1)
+                                    if (pieces.get(whoseMove + " bishop - " + whatBishop).getLocation().substring(0, 1)
                                             .equals(userInput.substring(1, 2))) {
-                                        bishopValidMove("white bishop - " + whatBishop);
+                                        bishopValidMove(whoseMove + " bishop - " + whatBishop);
                                         try {
-                                            for (int a = 0; a < pieces.get("white bishop - " + whatBishop).validMoves
+                                            for (int a = 0; a < pieces
+                                                    .get(whoseMove + " bishop - " + whatBishop).validMoves
                                                     .size()
                                                     && !done; a++) {
-                                                if (pieces.get("white bishop - " + whatBishop).validMoves.get(a)
+                                                if (pieces.get(whoseMove + " bishop - " + whatBishop).validMoves.get(a)
                                                         .equals(userInput.substring(3))) {
                                                     // move the piece
 
-                                                    pieces.get("white bishop - " + whatBishop)
+                                                    pieces.get(whoseMove + " bishop - " + whatBishop)
                                                             .setLocation(userInput.substring(3));
                                                     done = true;
                                                 }
@@ -963,22 +990,24 @@ public class board {
                     try {
                         for (int numberLocation = 1; numberLocation < numberArr.length && !done; numberLocation++) {
                             if (Integer.parseInt(userInput.substring(1, 2)) == numberArr[numberLocation - 1]) {
-                                for (int whatBishop = 1; whatBishop <= numberOfEachPiece.get("whiteBishops")
+                                for (int whatBishop = 1; whatBishop <= numberOfEachPiece.get(whoseMove + "Bishops")
                                         && !done; whatBishop++) {
                                     try {
-                                        if (pieces.get("white bishop - " + whatBishop).getLocation().substring(1, 2)
+                                        if (pieces.get(whoseMove + " bishop - " + whatBishop).getLocation()
+                                                .substring(1, 2)
                                                 .equals(userInput.substring(1, 2))) {
-                                            bishopValidMove("white bishop - " + whatBishop);
+                                            bishopValidMove(whoseMove + " bishop - " + whatBishop);
 
                                             try {
                                                 for (int a = 0; a < pieces
-                                                        .get("white bishop - " + whatBishop).validMoves
+                                                        .get(whoseMove + " bishop - " + whatBishop).validMoves
                                                         .size() && !done; a++) {
-                                                    if (pieces.get("white bishop - " + whatBishop).validMoves.get(a)
+                                                    if (pieces.get(whoseMove + " bishop - " + whatBishop).validMoves
+                                                            .get(a)
                                                             .equals(userInput.substring(3))) {
                                                         // move the piece
 
-                                                        pieces.get("white bishop - " + whatBishop)
+                                                        pieces.get(whoseMove + " bishop - " + whatBishop)
                                                                 .setLocation(userInput.substring(3));
                                                         done = true;
                                                         break;
@@ -1009,21 +1038,21 @@ public class board {
                     // letter look
                     for (int LetterLocation = 0; LetterLocation < letterArr.length && !done; LetterLocation++) {
                         if (userInput.substring(1, 2).equals(letterArr[LetterLocation])) {
-                            for (int whatRook = 1; whatRook <= numberOfEachPiece.get("whiteRooks")
+                            for (int whatRook = 1; whatRook <= numberOfEachPiece.get(whoseMove + "Rooks")
                                     && !done; whatRook++) {
                                 try {
-                                    if (pieces.get("white rook - " + whatRook).getLocation().substring(0, 1)
+                                    if (pieces.get(whoseMove + " rook - " + whatRook).getLocation().substring(0, 1)
                                             .equals(userInput.substring(1, 2))) {
-                                        rookValidMove("white rook - " + whatRook);
+                                        rookValidMove(whoseMove + " rook - " + whatRook);
                                         try {
-                                            for (int a = 0; a < pieces.get("white rook - " + whatRook).validMoves
+                                            for (int a = 0; a < pieces.get(whoseMove + " rook - " + whatRook).validMoves
                                                     .size()
                                                     && !done; a++) {
-                                                if (pieces.get("white rook - " + whatRook).validMoves.get(a)
+                                                if (pieces.get(whoseMove + " rook - " + whatRook).validMoves.get(a)
                                                         .equals(userInput.substring(3))) {
                                                     // move the piece
 
-                                                    pieces.get("white rook - " + whatRook)
+                                                    pieces.get(whoseMove + " rook - " + whatRook)
                                                             .setLocation(userInput.substring(3));
                                                     done = true;
                                                 }
@@ -1044,21 +1073,22 @@ public class board {
                     try {
                         for (int numberLocation = 1; numberLocation < numberArr.length && !done; numberLocation++) {
                             if (Integer.parseInt(userInput.substring(1, 2)) == numberArr[numberLocation]) {
-                                for (int whatRook = 1; whatRook <= numberOfEachPiece.get("whiteRooks")
+                                for (int whatRook = 1; whatRook <= numberOfEachPiece.get(whoseMove + "Rooks")
                                         && !done; whatRook++) {
                                     try {
-                                        if (pieces.get("white rook - " + whatRook).getLocation().substring(1, 2)
+                                        if (pieces.get(whoseMove + " rook - " + whatRook).getLocation().substring(1, 2)
                                                 .equals(userInput.substring(1, 2))) {
-                                            rookValidMove("white rook - " + whatRook);
+                                            rookValidMove(whoseMove + " rook - " + whatRook);
 
                                             try {
-                                                for (int a = 0; a < pieces.get("white rook - " + whatRook).validMoves
+                                                for (int a = 0; a < pieces
+                                                        .get(whoseMove + " rook - " + whatRook).validMoves
                                                         .size() && !done; a++) {
-                                                    if (pieces.get("white rook - " + whatRook).validMoves.get(a)
+                                                    if (pieces.get(whoseMove + " rook - " + whatRook).validMoves.get(a)
                                                             .equals(userInput.substring(3))) {
                                                         // move the piece
 
-                                                        pieces.get("white rook - " + whatRook)
+                                                        pieces.get(whoseMove + " rook - " + whatRook)
                                                                 .setLocation(userInput.substring(3));
                                                         done = true;
                                                         break;
@@ -1100,24 +1130,26 @@ public class board {
                                         userInput.substring(2, 3)) == (numberArr[numberLocationOfQueen - 1])) {
                                     // now we know the the location of the queen we want to move
                                     for (int whatQueen = 1, foundQueens = 0; foundQueens < numberOfEachPiece
-                                            .get("whiteQueens"); whatQueen++) {
+                                            .get(whoseMove + "Queens"); whatQueen++) {
                                         try {
-                                            String locationOfCurrentQueen = pieces.get("white queen - " + whatQueen)
+                                            String locationOfCurrentQueen = pieces
+                                                    .get(whoseMove + " queen - " + whatQueen)
                                                     .getLocation();
                                             foundQueens++;
                                             String tempLocation = letterArr[letterOfQueen] + numberLocationOfQueen;
                                             if (locationOfCurrentQueen.equals(tempLocation)) {
-                                                queenValidMove("white queen - " + whatQueen);
+                                                queenValidMove(whoseMove + " queen - " + whatQueen);
                                                 // now we need to capture and move the queen
                                                 for (int currentValidMove = 0; currentValidMove < pieces
-                                                        .get("white queen - " + whatQueen).validMoves
+                                                        .get(whoseMove + " queen - " + whatQueen).validMoves
                                                         .size(); currentValidMove++) {
                                                     // find witch valid move we are doing
                                                     if (userInput.substring(3)
-                                                            .equals(pieces.get("white queen - " + whatQueen).validMoves
+                                                            .equals(pieces
+                                                                    .get(whoseMove + " queen - " + whatQueen).validMoves
                                                                     .get(currentValidMove))) {
 
-                                                        pieces.get("white queen - " + whatQueen)
+                                                        pieces.get(whoseMove + " queen - " + whatQueen)
                                                                 .setLocation(userInput.substring(3));
                                                         break;
                                                     }
@@ -1142,25 +1174,27 @@ public class board {
                                         .parseInt(userInput.substring(2, 3)) == numberArr[numberLocationOfRook - 1]) {
                                     // now we know the the location of the queen we want to move
                                     for (int whatRook = 0, foundRooks = 0; foundRooks < numberOfEachPiece
-                                            .get("whiteRooks"); whatRook++) {
+                                            .get(whoseMove + "Rooks"); whatRook++) {
                                         try {
-                                            String locationOfCurrentQueen = pieces.get("white rook - " + whatRook)
+                                            String locationOfCurrentQueen = pieces
+                                                    .get(whoseMove + " rook - " + whatRook)
                                                     .getLocation();
                                             foundRooks++;
                                             String tempLocation = letterArr[letterLocationOfRook]
                                                     + numberLocationOfRook;
                                             if (locationOfCurrentQueen.equals(tempLocation)) {
-                                                rookValidMove("white rook - " + whatRook);
+                                                rookValidMove(whoseMove + " rook - " + whatRook);
                                                 // now we need to capture and move the queen
                                                 for (int currentValidMove = 0; currentValidMove < pieces
-                                                        .get("white rook - " + whatRook).validMoves
+                                                        .get(whoseMove + " rook - " + whatRook).validMoves
                                                         .size(); currentValidMove++) {
                                                     // find witch valid move we are doing
                                                     if (userInput.substring(3)
-                                                            .equals(pieces.get("white rook - " + whatRook).validMoves
+                                                            .equals(pieces
+                                                                    .get(whoseMove + " rook - " + whatRook).validMoves
                                                                     .get(currentValidMove))) {
 
-                                                        pieces.get("white rook - " + whatRook)
+                                                        pieces.get(whoseMove + " rook - " + whatRook)
                                                                 .setLocation(userInput.substring(3));
                                                     }
                                                 }
@@ -1184,26 +1218,28 @@ public class board {
                                         .parseInt(userInput.substring(2, 3)) == numberArr[numberLocationOfBishop - 1]) {
                                     // now we know the the location of the queen we want to move
                                     for (int whatBishop = 0, foundBishops = 0; foundBishops < numberOfEachPiece
-                                            .get("whiteBishops"); whatBishop++) {
+                                            .get(whoseMove + "Bishops"); whatBishop++) {
                                         try {
-                                            String locationOfCurrentQueen = pieces.get("white bishop - " + whatBishop)
+                                            String locationOfCurrentQueen = pieces
+                                                    .get(whoseMove + " bishop - " + whatBishop)
                                                     .getLocation();
                                             foundBishops++;
                                             String tempLocation = letterArr[letterLocationOfBishop]
                                                     + numberLocationOfBishop;
                                             if (locationOfCurrentQueen.equals(tempLocation)) {
-                                                bishopValidMove("white bishop - " + whatBishop);
+                                                bishopValidMove(whoseMove + " bishop - " + whatBishop);
                                                 // now we need to capture and move the queen
                                                 for (int currentValidMove = 0; currentValidMove < pieces
-                                                        .get("white bishop - " + whatBishop).validMoves
+                                                        .get(whoseMove + " bishop - " + whatBishop).validMoves
                                                         .size(); currentValidMove++) {
                                                     // find witch valid move we are doing
                                                     if (userInput.substring(3)
                                                             .equals(pieces
-                                                                    .get("white bishop - " + whatBishop).validMoves
+                                                                    .get(whoseMove + " bishop - "
+                                                                            + whatBishop).validMoves
                                                                     .get(currentValidMove))) {
 
-                                                        pieces.get("white bishop - " + whatBishop)
+                                                        pieces.get(whoseMove + " bishop - " + whatBishop)
                                                                 .setLocation(userInput.substring(3));
                                                     }
                                                 }
@@ -1228,25 +1264,27 @@ public class board {
                                         .parseInt(userInput.substring(2, 3)) == numberArr[numberLocationOfKnight - 1]) {
                                     // now we know the the location of the queen we want to move
                                     for (int whatRook = 0, foundRooks = 0; foundRooks < numberOfEachPiece
-                                            .get("whiteKnights"); whatRook++) {
+                                            .get(whoseMove + "Knights"); whatRook++) {
                                         try {
-                                            String locationOfCurrentQueen = pieces.get("white knight - " + whatRook)
+                                            String locationOfCurrentQueen = pieces
+                                                    .get(whoseMove + " knight - " + whatRook)
                                                     .getLocation();
                                             foundRooks++;
                                             String tempLocation = letterArr[letterLocationOfKnight]
                                                     + numberLocationOfKnight;
                                             if (locationOfCurrentQueen.equals(tempLocation)) {
-                                                knightValidMove("white knight - " + whatRook);
+                                                knightValidMove(whoseMove + " knight - " + whatRook);
                                                 // now we need to capture and move the queen
                                                 for (int currentValidMove = 0; currentValidMove < pieces
-                                                        .get("white knight - " + whatRook).validMoves
+                                                        .get(whoseMove + " knight - " + whatRook).validMoves
                                                         .size(); currentValidMove++) {
                                                     // find witch valid move we are doing
                                                     if (userInput.substring(3)
-                                                            .equals(pieces.get("white knight - " + whatRook).validMoves
+                                                            .equals(pieces
+                                                                    .get(whoseMove + " knight - " + whatRook).validMoves
                                                                     .get(currentValidMove))) {
 
-                                                        pieces.get("white knight - " + whatRook)
+                                                        pieces.get(whoseMove + " knight - " + whatRook)
                                                                 .setLocation(userInput.substring(3));
                                                     }
                                                 }
@@ -1278,24 +1316,26 @@ public class board {
                                 if (Integer.parseInt(userInput.substring(2, 3)) == numberArr[numberLocationOfQueen]) {
                                     // now we know the the location of the queen we want to move
                                     for (int whatQueen = 0, foundQueens = 0; foundQueens < numberOfEachPiece
-                                            .get("whiteQueens"); whatQueen++) {
+                                            .get(whoseMove + "Queens"); whatQueen++) {
                                         try {
-                                            String locationOfCurrentQueen = pieces.get("white queen - " + whatQueen)
+                                            String locationOfCurrentQueen = pieces
+                                                    .get(whoseMove + " queen - " + whatQueen)
                                                     .getLocation();
                                             foundQueens++;
                                             String tempLocation = letterArr[letterOfQueen] + numberLocationOfQueen;
                                             if (locationOfCurrentQueen.equals(tempLocation)) {
-                                                queenValidMove("white queen - " + whatQueen);
+                                                queenValidMove(whoseMove + " queen - " + whatQueen);
                                                 // now we need to capture and move the queen
                                                 for (int currentValidMove = 0; currentValidMove < pieces
-                                                        .get("white queen - " + whatQueen).validMoves
+                                                        .get(whoseMove + " queen - " + whatQueen).validMoves
                                                         .size(); currentValidMove++) {
                                                     // find witch valid move we are doing
                                                     if (userInput.substring(4)
-                                                            .equals(pieces.get("white queen - " + whatQueen).validMoves
+                                                            .equals(pieces
+                                                                    .get(whoseMove + " queen - " + whatQueen).validMoves
                                                                     .get(currentValidMove))) {
                                                         removePiece(userInput.substring(4));
-                                                        pieces.get("white queen - " + whatQueen)
+                                                        pieces.get(whoseMove + " queen - " + whatQueen)
                                                                 .setLocation(userInput.substring(4));
                                                     }
                                                 }
@@ -1319,25 +1359,27 @@ public class board {
                                         .parseInt(userInput.substring(2, 3)) == numberArr[numberLocationOfRook - 1]) {
                                     // now we know the the location of the queen we want to move
                                     for (int whatRook = 0, foundRooks = 0; foundRooks < numberOfEachPiece
-                                            .get("whiteRooks"); whatRook++) {
+                                            .get(whoseMove + "Rooks"); whatRook++) {
                                         try {
-                                            String locationOfCurrentQueen = pieces.get("white rook - " + whatRook)
+                                            String locationOfCurrentQueen = pieces
+                                                    .get(whoseMove + " rook - " + whatRook)
                                                     .getLocation();
                                             foundRooks++;
                                             String tempLocation = letterArr[letterLocationOfRook]
                                                     + numberLocationOfRook;
                                             if (locationOfCurrentQueen.equals(tempLocation)) {
-                                                rookValidMove("white rook - " + whatRook);
+                                                rookValidMove(whoseMove + " rook - " + whatRook);
                                                 // now we need to capture and move the queen
                                                 for (int currentValidMove = 0; currentValidMove < pieces
-                                                        .get("white rook - " + whatRook).validMoves
+                                                        .get(whoseMove + " rook - " + whatRook).validMoves
                                                         .size(); currentValidMove++) {
                                                     // find witch valid move we are doing
                                                     if (userInput.substring(4)
-                                                            .equals(pieces.get("white rook - " + whatRook).validMoves
+                                                            .equals(pieces
+                                                                    .get(whoseMove + " rook - " + whatRook).validMoves
                                                                     .get(currentValidMove))) {
                                                         removePiece(userInput.substring(4));
-                                                        pieces.get("white rook - " + whatRook)
+                                                        pieces.get(whoseMove + " rook - " + whatRook)
                                                                 .setLocation(userInput.substring(4));
                                                     }
                                                 }
@@ -1361,26 +1403,28 @@ public class board {
                                         .parseInt(userInput.substring(2, 3)) == numberArr[numberLocationOfBishop - 1]) {
                                     // now we know the the location of the queen we want to move
                                     for (int whatBishop = 0, foundBishops = 0; foundBishops < numberOfEachPiece
-                                            .get("whiteBishops"); whatBishop++) {
+                                            .get(whoseMove + "Bishops"); whatBishop++) {
                                         try {
-                                            String locationOfCurrentQueen = pieces.get("white bishop - " + whatBishop)
+                                            String locationOfCurrentQueen = pieces
+                                                    .get(whoseMove + " bishop - " + whatBishop)
                                                     .getLocation();
                                             foundBishops++;
                                             String tempLocation = letterArr[letterLocationOfBishop]
                                                     + numberLocationOfBishop;
                                             if (locationOfCurrentQueen.equals(tempLocation)) {
-                                                bishopValidMove("white bishop - " + whatBishop);
+                                                bishopValidMove(whoseMove + " bishop - " + whatBishop);
                                                 // now we need to capture and move the queen
                                                 for (int currentValidMove = 0; currentValidMove < pieces
-                                                        .get("white bishop - " + whatBishop).validMoves
+                                                        .get(whoseMove + " bishop - " + whatBishop).validMoves
                                                         .size(); currentValidMove++) {
                                                     // find witch valid move we are doing
                                                     if (userInput.substring(4)
                                                             .equals(pieces
-                                                                    .get("white bishop - " + whatBishop).validMoves
+                                                                    .get(whoseMove + " bishop - "
+                                                                            + whatBishop).validMoves
                                                                     .get(currentValidMove))) {
                                                         removePiece(userInput.substring(4));
-                                                        pieces.get("white bishop - " + whatBishop)
+                                                        pieces.get(whoseMove + " bishop - " + whatBishop)
                                                                 .setLocation(userInput.substring(4));
                                                     }
                                                 }
@@ -1405,25 +1449,27 @@ public class board {
                                         .parseInt(userInput.substring(2, 3)) == numberArr[numberLocationOfKnight - 1]) {
                                     // now we know the the location of the queen we want to move
                                     for (int whatRook = 0, foundRooks = 0; foundRooks < numberOfEachPiece
-                                            .get("whiteKnights"); whatRook++) {
+                                            .get(whoseMove + "Knights"); whatRook++) {
                                         try {
-                                            String locationOfCurrentQueen = pieces.get("white knight - " + whatRook)
+                                            String locationOfCurrentQueen = pieces
+                                                    .get(whoseMove + " knight - " + whatRook)
                                                     .getLocation();
                                             foundRooks++;
                                             String tempLocation = letterArr[letterLocationOfKnight]
                                                     + numberLocationOfKnight;
                                             if (locationOfCurrentQueen.equals(tempLocation)) {
-                                                knightValidMove("white knight - " + whatRook);
+                                                knightValidMove(whoseMove + " knight - " + whatRook);
                                                 // now we need to capture and move the queen
                                                 for (int currentValidMove = 0; currentValidMove < pieces
-                                                        .get("white knight - " + whatRook).validMoves
+                                                        .get(whoseMove + " knight - " + whatRook).validMoves
                                                         .size(); currentValidMove++) {
                                                     // find witch valid move we are doing
                                                     if (userInput.substring(4)
-                                                            .equals(pieces.get("white knight - " + whatRook).validMoves
+                                                            .equals(pieces
+                                                                    .get(whoseMove + " knight - " + whatRook).validMoves
                                                                     .get(currentValidMove))) {
                                                         removePiece(userInput.substring(4));
-                                                        pieces.get("white knight - " + whatRook)
+                                                        pieces.get(whoseMove + " knight - " + whatRook)
                                                                 .setLocation(tempLocation);
                                                     }
                                                 }
@@ -1444,6 +1490,11 @@ public class board {
             }
         }
         displayBoard();
+        if (whoseMove.equals("white")) {
+            whoseMove = "black";
+        } else {
+            whoseMove = "white";
+        }
     }
 
     private void pawnPromote(String name, boolean move) {
@@ -1453,28 +1504,28 @@ public class board {
             whatPieceToPromoteTo = userInput.substring(3);
             switch (whatPieceToPromoteTo) {
                 case "Q":
-                    increasePieceCount("whiteQueens");
-                    pieces.put("white queen - " + numberOfEachPiece.get("whiteQueens"),
-                            new queen(userInput.substring(0, 2), "white queen"));
-                    decreasePieceCount("whitePawns");
+                    increasePieceCount(whoseMove + "Queens");
+                    pieces.put(whoseMove + " queen - " + numberOfEachPiece.get(whoseMove + "Queens"),
+                            new queen(userInput.substring(0, 2), whoseMove + " queen"));
+                    decreasePieceCount(whoseMove + "Pawns");
                     break;
                 case "R":
-                    increasePieceCount("whiteRooks");
-                    pieces.put("white rook - " + numberOfEachPiece.get("whiteRooks"),
-                            new rook(userInput.substring(0, 2), "white rook"));
-                    decreasePieceCount("whitePawns");
+                    increasePieceCount(whoseMove + "Rooks");
+                    pieces.put(whoseMove + " rook - " + numberOfEachPiece.get(whoseMove + "Rooks"),
+                            new rook(userInput.substring(0, 2), whoseMove + " rook"));
+                    decreasePieceCount(whoseMove + "Pawns");
                     break;
                 case "N":
-                    increasePieceCount("whiteKnights");
-                    decreasePieceCount("whitePawns");
-                    pieces.put("white knight - " + numberOfEachPiece.get("whatKnights"),
-                            new knight(userInput.substring(0, 2), "white knight"));
+                    increasePieceCount(whoseMove + "Knights");
+                    decreasePieceCount(whoseMove + "Pawns");
+                    pieces.put(whoseMove + " knight - " + numberOfEachPiece.get("whatKnights"),
+                            new knight(userInput.substring(0, 2), whoseMove + " knight"));
                     break;
                 case "B":
-                    increasePieceCount("whiteBishops");
-                    pieces.put("white bishop - " + numberOfEachPiece.get("whatBishops"),
-                            new bishop(userInput.substring(0, 2), "white bishop"));
-                    decreasePieceCount("whitePawns");
+                    increasePieceCount(whoseMove + "Bishops");
+                    pieces.put(whoseMove + " bishop - " + numberOfEachPiece.get("whatBishops"),
+                            new bishop(userInput.substring(0, 2), whoseMove + " bishop"));
+                    decreasePieceCount(whoseMove + "Pawns");
                     break;
                 default:
                     break;
@@ -1485,28 +1536,28 @@ public class board {
             switch (whatPieceToPromoteTo) {
                 // switch user input number
                 case "Q":
-                    increasePieceCount("whiteQueens");
-                    pieces.put("white queen - " + numberOfEachPiece.get("whiteQueens"),
-                            new queen(userInput.substring(2, 4), "white queen"));
-                    decreasePieceCount("whitePawns");
+                    increasePieceCount(whoseMove + "Queens");
+                    pieces.put(whoseMove + " queen - " + numberOfEachPiece.get(whoseMove + "Queens"),
+                            new queen(userInput.substring(2, 4), whoseMove + " queen"));
+                    decreasePieceCount(whoseMove + "Pawns");
                     break;
                 case "R":
-                    increasePieceCount("whiteRooks");
-                    pieces.put("white rook - " + numberOfEachPiece.get("whiteRooks"),
-                            new rook(userInput.substring(2, 4), "white rook"));
-                    decreasePieceCount("whitePawns");
+                    increasePieceCount(whoseMove + "Rooks");
+                    pieces.put(whoseMove + " rook - " + numberOfEachPiece.get(whoseMove + "Rooks"),
+                            new rook(userInput.substring(2, 4), whoseMove + " rook"));
+                    decreasePieceCount(whoseMove + "Pawns");
                     break;
                 case "N":
-                    increasePieceCount("whiteKnights");
-                    pieces.put("white knight - " + numberOfEachPiece.get("whiteKnights"),
-                            new knight(userInput.substring(2, 4), "white knight"));
-                    decreasePieceCount("whitePawns");
+                    increasePieceCount(whoseMove + "Knights");
+                    pieces.put(whoseMove + " knight - " + numberOfEachPiece.get(whoseMove + "Knights"),
+                            new knight(userInput.substring(2, 4), whoseMove + " knight"));
+                    decreasePieceCount(whoseMove + "Pawns");
                     break;
                 case "B":
-                    increasePieceCount("whiteBishops");
-                    pieces.put("white bishop - " + numberOfEachPiece.get("whiteBishops"),
-                            new bishop(userInput.substring(2, 4), "white bishop"));
-                    decreasePieceCount("whitePawns");
+                    increasePieceCount(whoseMove + "Bishops");
+                    pieces.put(whoseMove + " bishop - " + numberOfEachPiece.get(whoseMove + "Bishops"),
+                            new bishop(userInput.substring(2, 4), whoseMove + " bishop"));
+                    decreasePieceCount(whoseMove + "Pawns");
                     break;
                 default:
                     break;
@@ -2378,24 +2429,41 @@ public class board {
                 String letterOfWhoGotCaptured = whoIsAtLocation(pieces.get(whoGotCaptured).getLocation()).substring(1);
                 switch (letterOfWhoGotCaptured) {
                     case "Q":
-                        decreasePieceCount("blackQueens");
-
+                        if (whoseMove.equals("white")) {
+                            decreasePieceCount("blackQueens");
+                        } else if (whoseMove.equals("black")) {
+                            decreasePieceCount("whiteQueens");
+                        }
                         break;
                     case "R":
-                        decreasePieceCount("blackRooks");
-
+                        if (whoseMove.equals("white")) {
+                            decreasePieceCount("blackRooks");
+                        } else if (whoseMove.equals("black")) {
+                            decreasePieceCount("whiteRooks");
+                        }
                         break;
                     case "N":
-                        decreasePieceCount("blackKnights");
 
+                        if (whoseMove.equals("white")) {
+                            decreasePieceCount("blackKnights");
+                        } else if (whoseMove.equals("black")) {
+                            decreasePieceCount("whiteKnights");
+                        }
                         break;
                     case "B":
-                        decreasePieceCount("blackBishops");
-
+                        if (whoseMove.equals("white")) {
+                            decreasePieceCount("blackBishops");
+                        } else if (whoseMove.equals("black")) {
+                            decreasePieceCount("whiteBishops");
+                        }
                         break;
                     case "P":
-                        decreasePieceCount("blackPawns");
-
+                        
+                        if (whoseMove.equals("white")) {
+                            decreasePieceCount("blackPawns");
+                        } else if (whoseMove.equals("black")) {
+                            decreasePieceCount("whitePawns");
+                        }
                         break;
                     default:
                         break;
@@ -2433,9 +2501,9 @@ public class board {
     }
 
     public void displayBoard() {
-       final String RESET = "\033[0m"; // Text Reset
-       final String PURPLE_BOLD_BRIGHT = "\033[1;95m";// PURPLE
-       final String WHITE_BACKGROUND_BRIGHT = "\033[0;107m"; // WHITE
+        final String RESET = "\033[0m"; // Text Reset
+        final String PURPLE_BOLD_BRIGHT = "\033[1;95m";// PURPLE
+        final String WHITE_BACKGROUND_BRIGHT = "\033[0;107m"; // WHITE
 
         for (int i = 8; i > 0; i--) {
             for (int d = 1; d < 9; d++) {
@@ -2444,13 +2512,12 @@ public class board {
                 String output = whoIsAtLocation(tempLocation);
 
                 if (output.substring(0, 1).equals("B")) {
-                    
-                    System.out.print(WHITE_BACKGROUND_BRIGHT + PURPLE_BOLD_BRIGHT + output + " "+ RESET);
 
+                    System.out.print(WHITE_BACKGROUND_BRIGHT + PURPLE_BOLD_BRIGHT + output + " " + RESET);
 
-                }  else {
-                    
-                    System.out.print(output+" ");
+                } else {
+
+                    System.out.print(output + " ");
                 }
 
             }
@@ -2490,8 +2557,8 @@ public class board {
         }
 
         for (int whatPawn = 1, foundPawns = 0,
-                whiteOrBlack = 0; foundPawns < numberOfEachPiece.get(whiteAndBlack[whiteOrBlack] + "Pawns")
-                        && whatPawn <= 8; whatPawn++) {
+                whiteOrBlack = 0; foundPawns < numberOfEachPiece
+                        .get(whiteAndBlack[whiteOrBlack] + "Pawns"); whatPawn++) {
             try {
                 if (whiteOrBlack == 0) {
                     if (pieces.get("white pawn - " + whatPawn).location.equals(location)) {
