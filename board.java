@@ -6,9 +6,8 @@ import java.util.Scanner;
 public class board {
     /*
      * todo
-     * make moveByMove more modular
-     * be able to import and export PGN
      * checks for check and mate on king
+     * make moveByMove more modular
      * error handling
      */
     public HashMap<String, pieces> pieces = new HashMap<String, pieces>();
@@ -17,7 +16,8 @@ public class board {
     String whoseMove = "white";
     private Scanner in = new Scanner(System.in);
     private String userInput;
-    public String PGN = "";
+    public String pgn = "";
+    public int moveCounter = 1;
 
     public void moveByMove() {
         System.out.println("please enter the move for " + whoseMove);
@@ -167,7 +167,7 @@ public class board {
                             if (pieces.get(whoseMove + " king").validMoves.get(i).equals(userInput.substring(1))) {
                                 // move the piece
                                 pieces.get(whoseMove + " king").setLocation(userInput.substring(1));
-                                PGN += userInput;
+                               
                             }
                         } catch (Exception e) {
 
@@ -299,7 +299,7 @@ public class board {
                                 removePiece(userInput.substring(2));
                                 // move the piece
                                 pieces.get(whoseMove + " king").setLocation(userInput.substring(2));
-                                PGN += userInput;
+                               
                                 break;
                             }
                         } catch (Exception e) {
@@ -1492,9 +1492,15 @@ public class board {
         displayBoard();
         if (whoseMove.equals("white")) {
             whoseMove = "black";
+            pgn += moveCounter + ". " + userInput;
+            
         } else {
             whoseMove = "white";
+            pgn += " " + userInput+" ";
+            moveCounter++;
+             System.out.println(pgn);
         }
+       
     }
 
     private void pawnPromote(String name, boolean move) {
@@ -2458,7 +2464,7 @@ public class board {
                         }
                         break;
                     case "P":
-                        
+
                         if (whoseMove.equals("white")) {
                             decreasePieceCount("blackPawns");
                         } else if (whoseMove.equals("black")) {
