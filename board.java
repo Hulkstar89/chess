@@ -6,16 +6,11 @@ import java.util.Scanner;
 public class board {
     /*
      * todo
-     * 
-     * 
-     * bugs
-     *
      * black move
+     * make moveByMove more modular
      * be able to import and export PGN
      * checks for check and mate on king
      * error handling
-     * color text?
-     * see the piece as a symbol
      */
     public HashMap<String, pieces> pieces = new HashMap<String, pieces>();
     public HashMap<String, Integer> numberOfEachPiece = new HashMap<String, Integer>();
@@ -1094,14 +1089,15 @@ public class board {
         }
 
         // if more then two big pieces can move to the same location
-        if(userInput.length() == 5 && userInputArr[2] != 'x'){
+        if (userInput.length() == 5 && userInputArr[2] != 'x') {
             switch (userInputArr[0]) {
                 case 'Q':
                     // letter
                     for (int letterOfQueen = 0; letterOfQueen < letterArr.length; letterOfQueen++) {
                         if (userInput.substring(1, 2).equals(letterArr[letterOfQueen])) {
                             for (int numberLocationOfQueen = 1; numberLocationOfQueen < numberArr.length; numberLocationOfQueen++) {
-                                if (Integer.parseInt(userInput.substring(2, 3))==(numberArr[numberLocationOfQueen-1])) {
+                                if (Integer.parseInt(
+                                        userInput.substring(2, 3)) == (numberArr[numberLocationOfQueen - 1])) {
                                     // now we know the the location of the queen we want to move
                                     for (int whatQueen = 1, foundQueens = 0; foundQueens < numberOfEachPiece
                                             .get("whiteQueens"); whatQueen++) {
@@ -1120,10 +1116,10 @@ public class board {
                                                     if (userInput.substring(3)
                                                             .equals(pieces.get("white queen - " + whatQueen).validMoves
                                                                     .get(currentValidMove))) {
-                                                        
+
                                                         pieces.get("white queen - " + whatQueen)
                                                                 .setLocation(userInput.substring(3));
-                                                                break;
+                                                        break;
                                                     }
                                                 }
                                             }
@@ -1142,7 +1138,8 @@ public class board {
                     for (int letterLocationOfRook = 0; letterLocationOfRook < letterArr.length; letterLocationOfRook++) {
                         if (userInput.substring(2, 3) == letterArr[letterLocationOfRook]) {
                             for (int numberLocationOfRook = 1; numberLocationOfRook < numberArr.length; numberLocationOfRook++) {
-                                if (Integer.parseInt( userInput.substring(2, 3)) == numberArr[numberLocationOfRook-1]) {
+                                if (Integer
+                                        .parseInt(userInput.substring(2, 3)) == numberArr[numberLocationOfRook - 1]) {
                                     // now we know the the location of the queen we want to move
                                     for (int whatRook = 0, foundRooks = 0; foundRooks < numberOfEachPiece
                                             .get("whiteRooks"); whatRook++) {
@@ -1162,7 +1159,7 @@ public class board {
                                                     if (userInput.substring(3)
                                                             .equals(pieces.get("white rook - " + whatRook).validMoves
                                                                     .get(currentValidMove))) {
-                                                        
+
                                                         pieces.get("white rook - " + whatRook)
                                                                 .setLocation(userInput.substring(3));
                                                     }
@@ -1183,7 +1180,8 @@ public class board {
                     for (int letterLocationOfBishop = 0; letterLocationOfBishop < letterArr.length; letterLocationOfBishop++) {
                         if (userInput.substring(2, 3) == letterArr[letterLocationOfBishop]) {
                             for (int numberLocationOfBishop = 1; numberLocationOfBishop < numberArr.length; numberLocationOfBishop++) {
-                                if (Integer.parseInt( userInput.substring(2, 3)) == numberArr[numberLocationOfBishop - 1 ]) {
+                                if (Integer
+                                        .parseInt(userInput.substring(2, 3)) == numberArr[numberLocationOfBishop - 1]) {
                                     // now we know the the location of the queen we want to move
                                     for (int whatBishop = 0, foundBishops = 0; foundBishops < numberOfEachPiece
                                             .get("whiteBishops"); whatBishop++) {
@@ -1204,7 +1202,7 @@ public class board {
                                                             .equals(pieces
                                                                     .get("white bishop - " + whatBishop).validMoves
                                                                     .get(currentValidMove))) {
-                                                        
+
                                                         pieces.get("white bishop - " + whatBishop)
                                                                 .setLocation(userInput.substring(3));
                                                     }
@@ -1226,7 +1224,8 @@ public class board {
                     for (int letterLocationOfKnight = 0; letterLocationOfKnight < letterArr.length; letterLocationOfKnight++) {
                         if (userInput.substring(2, 3) == letterArr[letterLocationOfKnight]) {
                             for (int numberLocationOfKnight = 1; numberLocationOfKnight < numberArr.length; numberLocationOfKnight++) {
-                                if (Integer.parseInt( userInput.substring(2, 3)) == numberArr[numberLocationOfKnight-1]) {
+                                if (Integer
+                                        .parseInt(userInput.substring(2, 3)) == numberArr[numberLocationOfKnight - 1]) {
                                     // now we know the the location of the queen we want to move
                                     for (int whatRook = 0, foundRooks = 0; foundRooks < numberOfEachPiece
                                             .get("whiteKnights"); whatRook++) {
@@ -1246,7 +1245,7 @@ public class board {
                                                     if (userInput.substring(3)
                                                             .equals(pieces.get("white knight - " + whatRook).validMoves
                                                                     .get(currentValidMove))) {
-                                                        
+
                                                         pieces.get("white knight - " + whatRook)
                                                                 .setLocation(userInput.substring(3));
                                                     }
@@ -1316,7 +1315,8 @@ public class board {
                     for (int letterLocationOfRook = 0; letterLocationOfRook < letterArr.length; letterLocationOfRook++) {
                         if (userInput.substring(1, 2) == letterArr[letterLocationOfRook]) {
                             for (int numberLocationOfRook = 1; numberLocationOfRook < numberArr.length; numberLocationOfRook++) {
-                                if (Integer.parseInt(userInput.substring(2, 3)) == numberArr[numberLocationOfRook-1]) {
+                                if (Integer
+                                        .parseInt(userInput.substring(2, 3)) == numberArr[numberLocationOfRook - 1]) {
                                     // now we know the the location of the queen we want to move
                                     for (int whatRook = 0, foundRooks = 0; foundRooks < numberOfEachPiece
                                             .get("whiteRooks"); whatRook++) {
@@ -1357,7 +1357,8 @@ public class board {
                     for (int letterLocationOfBishop = 0; letterLocationOfBishop < letterArr.length; letterLocationOfBishop++) {
                         if (userInput.substring(1, 2) == letterArr[letterLocationOfBishop]) {
                             for (int numberLocationOfBishop = 0; numberLocationOfBishop < numberArr.length; numberLocationOfBishop++) {
-                                if (Integer.parseInt(userInput.substring(2, 3)) == numberArr[numberLocationOfBishop-1]) {
+                                if (Integer
+                                        .parseInt(userInput.substring(2, 3)) == numberArr[numberLocationOfBishop - 1]) {
                                     // now we know the the location of the queen we want to move
                                     for (int whatBishop = 0, foundBishops = 0; foundBishops < numberOfEachPiece
                                             .get("whiteBishops"); whatBishop++) {
@@ -1400,7 +1401,8 @@ public class board {
                     for (int letterLocationOfKnight = 0; letterLocationOfKnight < letterArr.length; letterLocationOfKnight++) {
                         if (userInput.substring(1, 2) == letterArr[letterLocationOfKnight]) {
                             for (int numberLocationOfKnight = 1; numberLocationOfKnight < numberArr.length; numberLocationOfKnight++) {
-                                if (Integer.parseInt(userInput.substring(2, 3)) == numberArr[numberLocationOfKnight-1]) {
+                                if (Integer
+                                        .parseInt(userInput.substring(2, 3)) == numberArr[numberLocationOfKnight - 1]) {
                                     // now we know the the location of the queen we want to move
                                     for (int whatRook = 0, foundRooks = 0; foundRooks < numberOfEachPiece
                                             .get("whiteKnights"); whatRook++) {
@@ -2431,6 +2433,9 @@ public class board {
     }
 
     public void displayBoard() {
+       final String RESET = "\033[0m"; // Text Reset
+       final String PURPLE_BOLD_BRIGHT = "\033[1;95m";// PURPLE
+       final String WHITE_BACKGROUND_BRIGHT = "\033[0;107m"; // WHITE
 
         for (int i = 8; i > 0; i--) {
             for (int d = 1; d < 9; d++) {
@@ -2438,7 +2443,16 @@ public class board {
                 String tempLocation = letterLocation + i;
                 String output = whoIsAtLocation(tempLocation);
 
-                System.out.print(output + " ");
+                if (output.substring(0, 1).equals("B")) {
+                    
+                    System.out.print(WHITE_BACKGROUND_BRIGHT + PURPLE_BOLD_BRIGHT + output + " "+ RESET);
+
+
+                }  else {
+                    
+                    System.out.print(output+" ");
+                }
+
             }
             System.out.print("\n");
         }

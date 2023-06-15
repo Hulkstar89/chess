@@ -17,7 +17,7 @@ public class pieces {
 
     public void setLocation(String location) {
         this.location = location;
-    }
+   }
 
     public void move() {
 
