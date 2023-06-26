@@ -7,24 +7,24 @@ import java.util.Scanner;
 public class board {
     /*
      * todo
+     * blocking works
      * 
-     * checks for check and mate on king
-     * before anymove we will check if it puts the king under check
-     * if it doesn't then we continue
-     * if it does then we wont move the piece and we will inform the player they
-     * cant make that move
-     * make moveByMove more modular
+     * captues do not
+     * i need to check if king can move out of a check
+     * 
+     * 
+     * make code more modular
      * error handling
      */
     public HashMap<String, pieces> pieces = new HashMap<String, pieces>();
     public HashMap<String, Integer> numberOfEachPiece = new HashMap<String, Integer>();
-    String[] whiteAndBlack = { "white", "black", };
+    String[] whiteAndBlack = { "white", "black" };
     String whoseMove = "white";
     private Scanner in = new Scanner(System.in);
     private String userInput;
     public String pgn = "";
     public int moveCounter = 1;
-    public boolean isKingUnderCheck = false;
+    private boolean isKingUnderCheck = false;
 
     public void moveByMove() {
         // if it doesn't then we continue
@@ -60,6 +60,8 @@ public class board {
                             if (!isKingUnderCheck) {
                                 pieces.get(whoseMove + " pawn - " + j).setLocation(userInput);
                                 pieces.get(whoseMove + " pawn - " + j).moreThenOnce = true;
+                            } else {
+                                System.out.println("king is under Check");
                             }
 
                         }
@@ -198,8 +200,12 @@ public class board {
                             try {
                                 if (pieces.get(whoseMove + " king").validMoves.get(i).equals(userInput.substring(1))) {
                                     // move the piece
-                                    pieces.get(whoseMove + " king").setLocation(userInput.substring(1));
-80ugoiug
+                                    isKingUnderCheck = willKingBeUnderCheck(
+                                            pieces.get(whoseMove + " king").getLocation(), userInput.substring(1));
+                                    if (!isKingUnderCheck) {
+                                        pieces.get(whoseMove + " king").setLocation(userInput.substring(1));
+
+                                    }
                                 }
                             } catch (Exception e) {
 
@@ -222,9 +228,14 @@ public class board {
                                         .size(); validMove++) {
                                     if (pieces.get(whoseMove + " queen - " + whatQueen).validMoves.get(validMove)
                                             .equals(userInput.substring(1))) {
-                                        // move the piece
-                                        pieces.get(whoseMove + " queen - " + whatQueen)
-                                                .setLocation(userInput.substring(1));
+                                        isKingUnderCheck = willKingBeUnderCheck(
+                                                pieces.get(whoseMove + " queen - " + whatQueen).getLocation(),
+                                                userInput.substring(1));
+                                        if (!isKingUnderCheck) {
+                                            pieces.get(whoseMove + " queen - " + whatQueen)
+                                                    .setLocation(userInput.substring(1));
+                                        }
+
                                     }
                                 }
                             } catch (Exception e) {
@@ -248,7 +259,14 @@ public class board {
                                     if (pieces.get(whoseMove + " knight - " + j).validMoves.get(i)
                                             .equals(userInput.substring(1))) {
                                         // move the piece
-                                        pieces.get(whoseMove + " knight - " + j).setLocation(userInput.substring(1));
+                                        isKingUnderCheck = willKingBeUnderCheck(
+                                                pieces.get(whoseMove + " knight - " + j).getLocation(),
+                                                userInput.substring(1));
+                                        if (!isKingUnderCheck) {
+
+                                            pieces.get(whoseMove + " knight - " + j)
+                                                    .setLocation(userInput.substring(1));
+                                        }
                                     }
                                 }
                             } catch (Exception e) {
@@ -276,9 +294,16 @@ public class board {
                                         .size(); i++) {
                                     if (pieces.get(whoseMove + " bishop - " + whatBishop).validMoves.get(i)
                                             .equals(userInput.substring(1))) {
-                                        // move the piece
-                                        pieces.get(whoseMove + " bishop - " + whatBishop)
-                                                .setLocation(userInput.substring(1));
+                                        isKingUnderCheck = willKingBeUnderCheck(
+                                                pieces.get(whoseMove + " bishop - " + whatBishop).getLocation(),
+                                                userInput.substring(1));
+                                        if (!isKingUnderCheck) {
+
+                                            // move the piece
+                                            pieces.get(whoseMove + " bishop - " + whatBishop)
+                                                    .setLocation(userInput.substring(1));
+
+                                        }
                                     }
                                 }
                             } catch (Exception e) {
@@ -299,13 +324,20 @@ public class board {
                         }
 
                         // check if a valid move matches user input
-                        for (int i = 1; i <= numberOfEachPiece.get(whoseMove + "Rooks"); i++) {
+                        for (int whatRook = 1; whatRook <= numberOfEachPiece.get(whoseMove + "Rooks"); whatRook++) {
                             try {
-                                for (int k = 0; k < pieces.get(whoseMove + " rook - " + i).validMoves.size(); k++) {
-                                    if (pieces.get(whoseMove + " rook - " + i).validMoves.get(k)
+                                for (int k = 0; k < pieces.get(whoseMove + " rook - " + whatRook).validMoves
+                                        .size(); k++) {
+                                    if (pieces.get(whoseMove + " rook - " + whatRook).validMoves.get(k)
                                             .equals(userInput.substring(1))) {
-                                        // move the piece
-                                        pieces.get(whoseMove + " rook - " + i).setLocation(userInput.substring(1));
+                                        isKingUnderCheck = willKingBeUnderCheck(
+                                                pieces.get(whoseMove + " rook - " + whatRook).getLocation(),
+                                                userInput.substring(1));
+                                        if (!isKingUnderCheck) {
+                                            // move the piece
+                                            pieces.get(whoseMove + " rook - " + whatRook)
+                                                    .setLocation(userInput.substring(1));
+                                        }
                                     }
                                 }
                             } catch (Exception e) {
@@ -332,9 +364,15 @@ public class board {
                                 if (pieces.get(whoseMove + " king").validMoves.get(i).equals(userInput.substring(2))) {
                                     // remove the captured piece\
                                     removePiece(userInput.substring(2));
-                                    // move the piece
-                                    pieces.get(whoseMove + " king").setLocation(userInput.substring(2));
 
+                                    isKingUnderCheck = willKingBeUnderCheck(
+                                            pieces.get(whoseMove + " king").getLocation(),
+                                            userInput.substring(2));
+                                    if (!isKingUnderCheck) {
+                                        // move the piece
+                                        removePiece(userInput.substring(2));
+                                        pieces.get(whoseMove + " king").setLocation(userInput.substring(2));
+                                    }
                                     break;
                                 }
                             } catch (Exception e) {
@@ -360,11 +398,16 @@ public class board {
                                         if (pieces.get(whoseMove + " queen - " + whatQueen).validMoves
                                                 .get(whatValidMove)
                                                 .equals(userInput.substring(2))) {
-                                            // remove the captured piece\
-                                            removePiece(userInput.substring(2));
-                                            // move the piece
-                                            pieces.get(whoseMove + " queen - " + whatQueen)
-                                                    .setLocation(userInput.substring(2));
+                                            isKingUnderCheck = willKingBeUnderCheck(
+                                                    pieces.get(whoseMove + " queen - " + whatQueen).getLocation(),
+                                                    userInput.substring(2));
+                                            if (!isKingUnderCheck) {
+                                                // remove the captured piece\
+                                                removePiece(userInput.substring(2));
+                                                // move the piece
+                                                pieces.get(whoseMove + " queen - " + whatQueen)
+                                                        .setLocation(userInput.substring(2));
+                                            }
 
                                             break;
                                         }
@@ -395,10 +438,16 @@ public class board {
                                         .size(); i++) {
                                     if (pieces.get(whoseMove + " knight - " + whatKnight).validMoves.get(i)
                                             .equals(userInput.substring(2))) {
-                                        // move the piece
-                                        removePiece(userInput.substring(2));
-                                        pieces.get(whoseMove + " knight - " + whatKnight)
-                                                .setLocation(userInput.substring(2));
+                                        isKingUnderCheck = willKingBeUnderCheck(
+                                                pieces.get(whoseMove + " knight - " + whatKnight).getLocation(),
+                                                userInput.substring(2));
+                                        if (!isKingUnderCheck) {
+                                            // move the piece
+                                            removePiece(userInput.substring(2));
+                                            pieces.get(whoseMove + " knight - " + whatKnight)
+                                                    .setLocation(userInput.substring(2));
+
+                                        }
                                     }
                                 }
                             } catch (Exception e) {
@@ -428,10 +477,18 @@ public class board {
                                         .size(); validMove++) {
                                     if (pieces.get(whoseMove + " bishop - " + whatBishop).validMoves.get(validMove)
                                             .equals(userInput.substring(2))) {
-                                        removePiece(userInput.substring(2));
-                                        // move the piece
-                                        pieces.get(whoseMove + " bishop - " + whatBishop)
-                                                .setLocation(userInput.substring(2));
+
+                                        isKingUnderCheck = willKingBeUnderCheck(
+                                                pieces.get(whoseMove + " bishop - " + whatBishop).getLocation(),
+                                                userInput.substring(2));
+                                        if (!isKingUnderCheck) {
+                                            // move the piece
+                                            removePiece(userInput.substring(2));
+                                            pieces.get(whoseMove + " bishop - " + whatBishop)
+                                                    .setLocation(userInput.substring(2));
+
+                                        }
+
                                     }
                                 }
                             } catch (Exception e) {
@@ -457,10 +514,15 @@ public class board {
                                         .size(); i++) {
                                     if (pieces.get(whoseMove + " rook - " + whatRook).validMoves.get(i)
                                             .equals(userInput.substring(2))) {
-                                        // move the piece
-                                        removePiece(userInput.substring(2));
-                                        pieces.get(whoseMove + " rook - " + whatRook)
-                                                .setLocation(userInput.substring(2));
+                                        isKingUnderCheck = willKingBeUnderCheck(
+                                                pieces.get(whoseMove + " rook - " + whatRook).getLocation(),
+                                                userInput.substring(2));
+                                        if (!isKingUnderCheck) {
+                                            // move the piece
+                                            removePiece(userInput.substring(2));
+                                            pieces.get(whoseMove + " rook - " + whatRook)
+                                                    .setLocation(userInput.substring(2));
+                                        }
                                     }
                                 }
                             } catch (Exception e) {
@@ -501,10 +563,16 @@ public class board {
                                                             .get(a)
                                                             .equals(userInput.substring(2))) {
                                                         // move the piece
+                                                        isKingUnderCheck = willKingBeUnderCheck(
+                                                                pieces.get(whoseMove + " queen - " + whatQueen)
+                                                                        .getLocation(),
+                                                                userInput.substring(2));
+                                                        if (!isKingUnderCheck) {
 
-                                                        pieces.get(whoseMove + " queen - " + whatQueen)
-                                                                .setLocation(userInput.substring(2));
-                                                        done = true;
+                                                            pieces.get(whoseMove + " queen - " + whatQueen)
+                                                                    .setLocation(userInput.substring(2));
+                                                            done = true;
+                                                        }
                                                     }
                                                 }
                                             } catch (Exception e) {
@@ -587,10 +655,15 @@ public class board {
                                                             .get(a)
                                                             .equals(userInput.substring(2))) {
                                                         // move the piece
-
-                                                        pieces.get(whoseMove + " knight - " + whatKnight)
-                                                                .setLocation(userInput.substring(2));
-                                                        done = true;
+                                                        isKingUnderCheck = willKingBeUnderCheck(
+                                                                pieces.get(whoseMove + " knight - " + whatKnight)
+                                                                        .getLocation(),
+                                                                userInput.substring(2));
+                                                        if (!isKingUnderCheck) {
+                                                            pieces.get(whoseMove + " knight - " + whatKnight)
+                                                                    .setLocation(userInput.substring(2));
+                                                            done = true;
+                                                        }
                                                     }
                                                 }
                                             } catch (Exception e) {
@@ -674,10 +747,15 @@ public class board {
                                                             .get(a)
                                                             .equals(userInput.substring(2))) {
                                                         // move the piece
-
-                                                        pieces.get(whoseMove + " bishop - " + whatBishop)
-                                                                .setLocation(userInput.substring(2));
-                                                        done = true;
+                                                        isKingUnderCheck = willKingBeUnderCheck(
+                                                                pieces.get(whoseMove + " bishop - " + whatBishop)
+                                                                        .getLocation(),
+                                                                userInput.substring(2));
+                                                        if (!isKingUnderCheck) {
+                                                            pieces.get(whoseMove + " bishop - " + whatBishop)
+                                                                    .setLocation(userInput.substring(2));
+                                                            done = true;
+                                                        }
                                                     }
                                                 }
                                             } catch (Exception e) {
@@ -758,10 +836,15 @@ public class board {
                                                     if (pieces.get(whoseMove + " rook - " + whatRook).validMoves.get(a)
                                                             .equals(userInput.substring(2))) {
                                                         // move the piece
-
-                                                        pieces.get(whoseMove + " rook - " + whatRook)
-                                                                .setLocation(userInput.substring(2));
-                                                        done = true;
+                                                        isKingUnderCheck = willKingBeUnderCheck(
+                                                                pieces.get(whoseMove + " rook - " + whatRook)
+                                                                        .getLocation(),
+                                                                userInput.substring(2));
+                                                        if (!isKingUnderCheck) {
+                                                            pieces.get(whoseMove + " rook - " + whatRook)
+                                                                    .setLocation(userInput.substring(2));
+                                                            done = true;
+                                                        }
                                                     }
                                                 }
                                             } catch (Exception e) {
@@ -853,10 +936,16 @@ public class board {
                                                             .get(a)
                                                             .equals(userInput.substring(3))) {
                                                         // move the piece
+                                                        isKingUnderCheck = willKingBeUnderCheck(
+                                                                pieces.get(whoseMove + " queen - " + whatQueen)
+                                                                        .getLocation(),
+                                                                userInput.substring(3));
+                                                        if (!isKingUnderCheck) {
+                                                            pieces.get(whoseMove + " queen - " + whatQueen)
+                                                                    .setLocation(userInput.substring(3));
+                                                            done = true;
+                                                        }
 
-                                                        pieces.get(whoseMove + " queen - " + whatQueen)
-                                                                .setLocation(userInput.substring(3));
-                                                        done = true;
                                                     }
                                                 }
                                             } catch (Exception e) {
@@ -892,9 +981,16 @@ public class board {
                                                                 .get(a)
                                                                 .equals(userInput.substring(3))) {
                                                             // move the piece
-                                                            pieces.get(whoseMove + " queen - " + whatQueen)
-                                                                    .setLocation(userInput.substring(3));
-                                                            done = true;
+
+                                                            isKingUnderCheck = willKingBeUnderCheck(
+                                                                    pieces.get(whoseMove + " queen - " + whatQueen)
+                                                                            .getLocation(),
+                                                                    userInput.substring(3));
+                                                            if (!isKingUnderCheck) {
+                                                                pieces.get(whoseMove + " queen - " + whatQueen)
+                                                                        .setLocation(userInput.substring(3));
+                                                                done = true;
+                                                            }
                                                             break;
 
                                                         }
@@ -938,10 +1034,16 @@ public class board {
                                                             .get(a)
                                                             .equals(userInput.substring(3))) {
                                                         // move the piece
+                                                        isKingUnderCheck = willKingBeUnderCheck(
+                                                                pieces.get(whoseMove + " knight - " + whatKnight)
+                                                                        .getLocation(),
+                                                                userInput.substring(3));
+                                                        if (!isKingUnderCheck) {
+                                                            pieces.get(whoseMove + " knight - " + whatKnight)
+                                                                    .setLocation(userInput.substring(3));
+                                                            done = true;
+                                                        }
 
-                                                        pieces.get(whoseMove + " knight - " + whatKnight)
-                                                                .setLocation(userInput.substring(3));
-                                                        done = true;
                                                     }
                                                 }
                                             } catch (Exception e) {
@@ -977,10 +1079,16 @@ public class board {
                                                                 .get(a)
                                                                 .equals(userInput.substring(3))) {
                                                             // move the piece
+                                                            isKingUnderCheck = willKingBeUnderCheck(
+                                                                    pieces.get(whoseMove + " knight - " + whatKnight)
+                                                                            .getLocation(),
+                                                                    userInput.substring(3));
+                                                            if (!isKingUnderCheck) {
+                                                                pieces.get(whoseMove + " knight - " + whatKnight)
+                                                                        .setLocation(userInput.substring(3));
+                                                                done = true;
+                                                            }
 
-                                                            pieces.get(whoseMove + " knight - " + whatKnight)
-                                                                    .setLocation(userInput.substring(3));
-                                                            done = true;
                                                             break;
 
                                                         }
@@ -1025,10 +1133,16 @@ public class board {
                                                             .get(a)
                                                             .equals(userInput.substring(3))) {
                                                         // move the piece
+                                                        isKingUnderCheck = willKingBeUnderCheck(
+                                                                pieces.get(whoseMove + " bishop - " + whatBishop)
+                                                                        .getLocation(),
+                                                                userInput.substring(3));
+                                                        if (!isKingUnderCheck) {
+                                                            pieces.get(whoseMove + " bishop - " + whatBishop)
+                                                                    .setLocation(userInput.substring(3));
+                                                            done = true;
+                                                        }
 
-                                                        pieces.get(whoseMove + " bishop - " + whatBishop)
-                                                                .setLocation(userInput.substring(3));
-                                                        done = true;
                                                     }
                                                 }
                                             } catch (Exception e) {
@@ -1063,10 +1177,15 @@ public class board {
                                                                 .get(a)
                                                                 .equals(userInput.substring(3))) {
                                                             // move the piece
-
-                                                            pieces.get(whoseMove + " bishop - " + whatBishop)
-                                                                    .setLocation(userInput.substring(3));
-                                                            done = true;
+                                                            isKingUnderCheck = willKingBeUnderCheck(
+                                                                    pieces.get(whoseMove + " bishop - " + whatBishop)
+                                                                            .getLocation(),
+                                                                    userInput.substring(3));
+                                                            if (!isKingUnderCheck) {
+                                                                pieces.get(whoseMove + " bishop - " + whatBishop)
+                                                                        .setLocation(userInput.substring(3));
+                                                                done = true;
+                                                            }
                                                             break;
 
                                                         }
@@ -1109,10 +1228,16 @@ public class board {
                                                     if (pieces.get(whoseMove + " rook - " + whatRook).validMoves.get(a)
                                                             .equals(userInput.substring(3))) {
                                                         // move the piece
+                                                        isKingUnderCheck = willKingBeUnderCheck(
+                                                                pieces.get(whoseMove + " rook - " + whatRook)
+                                                                        .getLocation(),
+                                                                userInput.substring(3));
+                                                        if (!isKingUnderCheck) {
+                                                            pieces.get(whoseMove + " rook - " + whatRook)
+                                                                    .setLocation(userInput.substring(3));
+                                                            done = true;
+                                                        }
 
-                                                        pieces.get(whoseMove + " rook - " + whatRook)
-                                                                .setLocation(userInput.substring(3));
-                                                        done = true;
                                                     }
                                                 }
                                             } catch (Exception e) {
@@ -1148,9 +1273,15 @@ public class board {
                                                                 .equals(userInput.substring(3))) {
                                                             // move the piece
 
-                                                            pieces.get(whoseMove + " rook - " + whatRook)
-                                                                    .setLocation(userInput.substring(3));
-                                                            done = true;
+                                                            isKingUnderCheck = willKingBeUnderCheck(
+                                                                    pieces.get(whoseMove + " rook - " + whatRook)
+                                                                            .getLocation(),
+                                                                    userInput.substring(3));
+                                                            if (!isKingUnderCheck) {
+                                                                pieces.get(whoseMove + " rook - " + whatRook)
+                                                                        .setLocation(userInput.substring(3));
+                                                                done = true;
+                                                            }
                                                             break;
 
                                                         }
@@ -1209,9 +1340,15 @@ public class board {
                                                                         .get(whoseMove + " queen - "
                                                                                 + whatQueen).validMoves
                                                                         .get(currentValidMove))) {
+                                                            isKingUnderCheck = willKingBeUnderCheck(
+                                                                    pieces.get(whoseMove + " queen - " + whatQueen)
+                                                                            .getLocation(),
+                                                                    userInput.substring(3));
+                                                            if (!isKingUnderCheck) {
+                                                                pieces.get(whoseMove + " queen - " + whatQueen)
+                                                                        .setLocation(userInput.substring(3));
+                                                            }
 
-                                                            pieces.get(whoseMove + " queen - " + whatQueen)
-                                                                    .setLocation(userInput.substring(3));
                                                             break;
                                                         }
                                                     }
@@ -1256,9 +1393,15 @@ public class board {
                                                                         .get(whoseMove + " rook - "
                                                                                 + whatRook).validMoves
                                                                         .get(currentValidMove))) {
+                                                            isKingUnderCheck = willKingBeUnderCheck(
+                                                                    pieces.get(whoseMove + " rook - " + whatRook)
+                                                                            .getLocation(),
+                                                                    userInput.substring(3));
+                                                            if (!isKingUnderCheck) {
+                                                                pieces.get(whoseMove + " rook - " + whatRook)
+                                                                        .setLocation(userInput.substring(3));
+                                                            }
 
-                                                            pieces.get(whoseMove + " rook - " + whatRook)
-                                                                    .setLocation(userInput.substring(3));
                                                         }
                                                     }
                                                 }
@@ -1302,9 +1445,15 @@ public class board {
                                                                         .get(whoseMove + " bishop - "
                                                                                 + whatBishop).validMoves
                                                                         .get(currentValidMove))) {
+                                                            isKingUnderCheck = willKingBeUnderCheck(
+                                                                    pieces.get(whoseMove + " bishop - " + whatBishop)
+                                                                            .getLocation(),
+                                                                    userInput.substring(3));
+                                                            if (!isKingUnderCheck) {
+                                                                pieces.get(whoseMove + " bishop - " + whatBishop)
+                                                                        .setLocation(userInput.substring(3));
+                                                            }
 
-                                                            pieces.get(whoseMove + " bishop - " + whatBishop)
-                                                                    .setLocation(userInput.substring(3));
                                                         }
                                                     }
                                                 }
@@ -1328,30 +1477,37 @@ public class board {
                                             .parseInt(userInput.substring(2,
                                                     3)) == numberArr[numberLocationOfKnight - 1]) {
                                         // now we know the the location of the queen we want to move
-                                        for (int whatRook = 0, foundRooks = 0; foundRooks < numberOfEachPiece
-                                                .get(whoseMove + "Knights"); whatRook++) {
+                                        for (int whatKnight = 0, foundKnights = 0; foundKnights < numberOfEachPiece
+                                                .get(whoseMove + "Knights"); whatKnight++) {
                                             try {
                                                 String locationOfCurrentQueen = pieces
-                                                        .get(whoseMove + " knight - " + whatRook)
+                                                        .get(whoseMove + " knight - " + whatKnight)
                                                         .getLocation();
-                                                foundRooks++;
+                                                foundKnights++;
                                                 String tempLocation = letterArr[letterLocationOfKnight]
                                                         + numberLocationOfKnight;
                                                 if (locationOfCurrentQueen.equals(tempLocation)) {
-                                                    knightValidMove(whoseMove + " knight - " + whatRook);
+                                                    knightValidMove(whoseMove + " knight - " + whatKnight);
                                                     // now we need to capture and move the queen
                                                     for (int currentValidMove = 0; currentValidMove < pieces
-                                                            .get(whoseMove + " knight - " + whatRook).validMoves
+                                                            .get(whoseMove + " knight - " + whatKnight).validMoves
                                                             .size(); currentValidMove++) {
                                                         // find witch valid move we are doing
                                                         if (userInput.substring(3)
                                                                 .equals(pieces
                                                                         .get(whoseMove + " knight - "
-                                                                                + whatRook).validMoves
+                                                                                + whatKnight).validMoves
                                                                         .get(currentValidMove))) {
 
-                                                            pieces.get(whoseMove + " knight - " + whatRook)
-                                                                    .setLocation(userInput.substring(3));
+                                                            isKingUnderCheck = willKingBeUnderCheck(
+                                                                    pieces.get(whoseMove + " knight - " + whatKnight)
+                                                                            .getLocation(),
+                                                                    userInput.substring(3));
+                                                            if (!isKingUnderCheck) {
+                                                                pieces.get(whoseMove + " knight - " + whatKnight)
+                                                                        .setLocation(userInput.substring(3));
+                                                            }
+
                                                         }
                                                     }
                                                 }
@@ -1377,7 +1533,7 @@ public class board {
                     case 'Q':
                         // letter
                         for (int letterOfQueen = 0; letterOfQueen < letterArr.length; letterOfQueen++) {
-                            if (userInput.substring(1, 2) == letterArr[letterOfQueen]) {
+                            if (userInput.substring(1, 2).equals(letterArr[letterOfQueen])) {
                                 for (int numberLocationOfQueen = 1; numberLocationOfQueen < numberArr.length; numberLocationOfQueen++) {
                                     if (Integer
                                             .parseInt(userInput.substring(2, 3)) == numberArr[numberLocationOfQueen]) {
@@ -1402,9 +1558,16 @@ public class board {
                                                                         .get(whoseMove + " queen - "
                                                                                 + whatQueen).validMoves
                                                                         .get(currentValidMove))) {
-                                                            removePiece(userInput.substring(4));
-                                                            pieces.get(whoseMove + " queen - " + whatQueen)
-                                                                    .setLocation(userInput.substring(4));
+                                                            isKingUnderCheck = willKingBeUnderCheck(
+                                                                    pieces.get(whoseMove + " queen - " + whatQueen)
+                                                                            .getLocation(),
+                                                                    userInput.substring(4));
+                                                            if (!isKingUnderCheck) {
+                                                                removePiece(userInput.substring(4));
+                                                                pieces.get(whoseMove + " queen - " + whatQueen)
+                                                                        .setLocation(userInput.substring(4));
+                                                            }
+
                                                         }
                                                     }
                                                 }
@@ -1448,9 +1611,16 @@ public class board {
                                                                         .get(whoseMove + " rook - "
                                                                                 + whatRook).validMoves
                                                                         .get(currentValidMove))) {
-                                                            removePiece(userInput.substring(4));
-                                                            pieces.get(whoseMove + " rook - " + whatRook)
-                                                                    .setLocation(userInput.substring(4));
+                                                            isKingUnderCheck = willKingBeUnderCheck(
+                                                                    pieces.get(whoseMove + " rook - " + whatRook)
+                                                                            .getLocation(),
+                                                                    userInput.substring(4));
+                                                            if (!isKingUnderCheck) {
+                                                                removePiece(userInput.substring(4));
+                                                                pieces.get(whoseMove + " rook - " + whatRook)
+                                                                        .setLocation(userInput.substring(4));
+                                                            }
+
                                                         }
                                                     }
                                                 }
@@ -1494,9 +1664,16 @@ public class board {
                                                                         .get(whoseMove + " bishop - "
                                                                                 + whatBishop).validMoves
                                                                         .get(currentValidMove))) {
-                                                            removePiece(userInput.substring(4));
-                                                            pieces.get(whoseMove + " bishop - " + whatBishop)
-                                                                    .setLocation(userInput.substring(4));
+                                                            isKingUnderCheck = willKingBeUnderCheck(
+                                                                    pieces.get(whoseMove + " bishop - " + whatBishop)
+                                                                            .getLocation(),
+                                                                    userInput.substring(4));
+                                                            if (!isKingUnderCheck) {
+                                                                removePiece(userInput.substring(4));
+                                                                pieces.get(whoseMove + " bishop - " + whatBishop)
+                                                                        .setLocation(userInput.substring(4));
+                                                            }
+
                                                         }
                                                     }
                                                 }
@@ -1541,9 +1718,16 @@ public class board {
                                                                         .get(whoseMove + " knight - "
                                                                                 + whatRook).validMoves
                                                                         .get(currentValidMove))) {
-                                                            removePiece(userInput.substring(4));
-                                                            pieces.get(whoseMove + " knight - " + whatRook)
-                                                                    .setLocation(tempLocation);
+                                                            isKingUnderCheck = willKingBeUnderCheck(
+                                                                    pieces.get(whoseMove + " knight - " + whatRook)
+                                                                            .getLocation(),
+                                                                    userInput.substring(4));
+                                                            if (!isKingUnderCheck) {
+                                                                removePiece(userInput.substring(4));
+                                                                pieces.get(whoseMove + " knight - " + whatRook)
+                                                                        .setLocation(tempLocation);
+                                                            }
+
                                                         }
                                                     }
                                                 }
@@ -1563,15 +1747,17 @@ public class board {
                 }
             }
             displayBoard();
-            if (whoseMove.equals("white")) {
-                whoseMove = "black";
-                pgn += moveCounter + ". " + userInput;
+            if (!isKingUnderCheck) {
+                if (whoseMove.equals("white")) {
+                    whoseMove = "black";
+                    pgn += moveCounter + ". " + userInput;
 
-            } else {
-                whoseMove = "white";
-                pgn += " " + userInput + " ";
-                moveCounter++;
-                System.out.println(pgn);
+                } else {
+                    whoseMove = "white";
+                    pgn += " " + userInput + " ";
+                    moveCounter++;
+                    System.out.println(pgn);
+                }
             }
 
         }
@@ -1638,25 +1824,31 @@ public class board {
                     continue;
                 }
                 String whoAtTempLocation = whoIsAtLocationBackend(tempLocation);
+                if (!whoAtTempLocation.equals("")) {
 
-                if (whoseMove.equals("white") && whoAtTempLocation.substring(0, 1).equals("2")) {
-                    // we are white and we see a black piece
-                    // check bishop or queen'
+                    if (whoseMove.equals("white") && whoAtTempLocation.substring(0, 1).equals("2")) {
+                        // we are white and we see a black piece
+                        // check bishop or queen'
 
-                    if (/* bishop */whoAtTempLocation.substring(6, 12).equals("bishop")
-                            || /* queen */whoAtTempLocation.substring(6, 11).equals("queen")) {
-                        return true;
+                        if (/* bishop */whoAtTempLocation.substring(7, 13).equals("bishop")
+                                || /* queen */whoAtTempLocation.substring(7, 11).equals("queen")) {
+                            return true;
+                        }
+
+                    } else if (whoseMove.equals("black") && whoAtTempLocation.substring(0, 1).equals("1")) {
+                        // we are black and we see a white piece
+                        // check bishop or queen
+                        if (/* bishop */whoAtTempLocation.substring(7, 13).equals("bishop")
+                                || /* queen */whoAtTempLocation.substring(7, 11).equals("queen")) {
+                            return true;
+                        }
+                    } else {
+                        // if someone is their and they are on our side
+                        break;
                     }
-
-                } else if (whoseMove.equals("black") && whoAtTempLocation.substring(0, 1).equals("1")) {
-                    // we are black and we see a white piece
-                    // check bishop or queen
-                    if (/* bishop */whoAtTempLocation.substring(6, 12).equals("bishop")
-                            || /* queen */whoAtTempLocation.substring(6, 11).equals("queen")) {
-                        return true;
-                    }
-                } else {
-                    // if someone is their and they are on our side
+                } else if (tempLocation.equals(locationOfPiece)) {
+                    continue;
+                } else if (tempLocation.equals(LocationOfPieceAfterMove)) {
                     break;
                 }
             }
@@ -1674,28 +1866,34 @@ public class board {
                 String tempLocation = tempLetterLocation + tempNumberLocation;
 
                 String whoAtTempLocation = whoIsAtLocationBackend(tempLocation);
+                if (!whoAtTempLocation.equals("")) {
 
-                if (whoseMove.equals("white") && whoAtTempLocation.substring(0, 1).equals("2")) {
-                    // we are white and we see a black piece
-                    // check bishop or queen'
+                    if (whoseMove.equals("white") && whoAtTempLocation.substring(0, 1).equals("2")) {
+                        // we are white and we see a black piece
+                        // check bishop or queen'
 
-                    if (/* bishop */whoAtTempLocation.substring(6, 12).equals("bishop")
-                            || /* queen */whoAtTempLocation.substring(6, 11).equals("queen")) {
-                        return true;
+                        if (/* bishop */whoAtTempLocation.substring(7, 13).equals("bishop")
+                                || /* queen */whoAtTempLocation.substring(7, 11).equals("queen")) {
+                            return true;
+                        }
+
+                    } else if (whoseMove.equals("black") && whoAtTempLocation.substring(0, 1).equals("1")) {
+                        // we are black and we see a white piece
+                        // check bishop or queen
+                        if (/* bishop */whoAtTempLocation.substring(7, 13).equals("bishop")
+                                || /* queen */whoAtTempLocation.substring(7, 11).equals("queen")) {
+                            return true;
+                        }
+                    } else if (tempLocation.equals(locationOfPiece)) {
+                        continue;
+                    } else if (tempLocation.equals(LocationOfPieceAfterMove)) {
+                        break;
+                    } else {
+                        // if someone is their and they are on our side
+                        break;
                     }
 
-                } else if (whoseMove.equals("black") && whoAtTempLocation.substring(0, 1).equals("1")) {
-                    // we are black and we see a white piece
-                    // check bishop or queen
-                    if (/* bishop */whoAtTempLocation.substring(6, 12).equals("bishop")
-                            || /* queen */whoAtTempLocation.substring(6, 11).equals("queen")) {
-                        return true;
-                    }
-                } else {
-                    // if someone is their and they are on our side
-                    break;
                 }
-
             }
 
             // down and left
@@ -1710,26 +1908,32 @@ public class board {
                 }
 
                 String tempLocation = tempLetterLocation + tempNumberLocation;
+
                 String whoAtTempLocation = whoIsAtLocationBackend(tempLocation);
+                if (!whoAtTempLocation.equals("")) {
+                    if (whoseMove.equals("white") && whoAtTempLocation.substring(0, 1).equals("2")) {
+                        // we are white and we see a black piece
+                        // check bishop or queen'
 
-                if (whoseMove.equals("white") && whoAtTempLocation.substring(0, 1).equals("2")) {
-                    // we are white and we see a black piece
-                    // check bishop or queen'
+                        if (/* bishop */whoAtTempLocation.substring(7, 13).equals("bishop")
+                                || /* queen */whoAtTempLocation.substring(7, 11).equals("queen")) {
+                            return true;
+                        }
 
-                    if (/* bishop */whoAtTempLocation.substring(6, 12).equals("bishop")
-                            || /* queen */whoAtTempLocation.substring(6, 11).equals("queen")) {
-                        return true;
+                    } else if (whoseMove.equals("black") && whoAtTempLocation.substring(0, 1).equals("1")) {
+                        // we are black and we see a white piece
+                        // check bishop or queen
+                        if (/* bishop */whoAtTempLocation.substring(7, 13).equals("bishop")
+                                || /* queen */whoAtTempLocation.substring(7, 11).equals("queen")) {
+                            return true;
+                        }
+                    } else {
+                        // if someone is their and they are on our side
+                        break;
                     }
-
-                } else if (whoseMove.equals("black") && whoAtTempLocation.substring(0, 1).equals("1")) {
-                    // we are black and we see a white piece
-                    // check bishop or queen
-                    if (/* bishop */whoAtTempLocation.substring(6, 12).equals("bishop")
-                            || /* queen */whoAtTempLocation.substring(6, 11).equals("queen")) {
-                        return true;
-                    }
-                } else {
-                    // if someone is their and they are on our side
+                } else if (tempLocation.equals(locationOfPiece)) {
+                    continue;
+                } else if (tempLocation.equals(LocationOfPieceAfterMove)) {
                     break;
                 }
             }
@@ -1747,25 +1951,31 @@ public class board {
 
                 String tempLocation = tempLetterLocation + tempNumberLocation;
                 String whoAtTempLocation = whoIsAtLocationBackend(tempLocation);
+                if (!whoAtTempLocation.equals("")) {
 
-                if (whoseMove.equals("white") && whoAtTempLocation.substring(0, 1).equals("2")) {
-                    // we are white and we see a black piece
-                    // check bishop or queen'
+                    if (whoseMove.equals("white") && whoAtTempLocation.substring(0, 1).equals("2")) {
+                        // we are white and we see a black piece
+                        // check bishop or queen'
 
-                    if (/* bishop */whoAtTempLocation.substring(6, 12).equals("bishop")
-                            || /* queen */whoAtTempLocation.substring(6, 11).equals("queen")) {
-                        return true;
+                        if (/* bishop */whoAtTempLocation.substring(7, 13).equals("bishop")
+                                || /* queen */whoAtTempLocation.substring(7, 11).equals("queen")) {
+                            return true;
+                        }
+
+                    } else if (whoseMove.equals("black") && whoAtTempLocation.substring(0, 1).equals("1")) {
+                        // we are black and we see a white piece
+                        // check bishop or queen
+                        if (/* bishop */whoAtTempLocation.substring(7, 13).equals("bishop")
+                                || /* queen */whoAtTempLocation.substring(7, 11).equals("queen")) {
+                            return true;
+                        }
+                    } else {
+                        // if someone is their and they are on our side
+                        break;
                     }
-
-                } else if (whoseMove.equals("black") && whoAtTempLocation.substring(0, 1).equals("1")) {
-                    // we are black and we see a white piece
-                    // check bishop or queen
-                    if (/* bishop */whoAtTempLocation.substring(6, 12).equals("bishop")
-                            || /* queen */whoAtTempLocation.substring(6, 11).equals("queen")) {
-                        return true;
-                    }
-                } else {
-                    // if someone is their and they are on our side
+                } else if (tempLocation.equals(locationOfPiece)) {
+                    continue;
+                } else if (tempLocation.equals(LocationOfPieceAfterMove)) {
                     break;
                 }
             }
@@ -1783,25 +1993,31 @@ public class board {
                     continue;
                 }
                 String whoAtTempLocation = whoIsAtLocationBackend(tempLocation);
+                if (!whoAtTempLocation.equals("")) {
 
-                if (whoseMove.equals("white") && whoAtTempLocation.substring(0, 1).equals("2")) {
-                    // we are white and we see a black piece
-                    // check rook or queen'
+                    if (whoseMove.equals("white") && whoAtTempLocation.substring(0, 1).equals("2")) {
+                        // we are white and we see a black piece
+                        // check rook or queen'
 
-                    if (/* rook */whoAtTempLocation.substring(6, 10).equals("rook")
-                            || /* queen */whoAtTempLocation.substring(6, 11).equals("queen")) {
-                        return true;
+                        if (/* rook */whoAtTempLocation.substring(7, 10).equals("rook")
+                                || /* queen */whoAtTempLocation.substring(7, 11).equals("queen")) {
+                            return true;
+                        }
+
+                    } else if (whoseMove.equals("black") && whoAtTempLocation.substring(0, 1).equals("1")) {
+                        // we are black and we see a white piece
+                        // check rook or queen
+                        if (/* rook */whoAtTempLocation.substring(7, 10).equals("rook")
+                                || /* queen */whoAtTempLocation.substring(7, 11).equals("queen")) {
+                            return true;
+                        }
+                    } else {
+                        // if someone is their and they are on our side
+                        break;
                     }
-
-                } else if (whoseMove.equals("black") && whoAtTempLocation.substring(0, 1).equals("1")) {
-                    // we are black and we see a white piece
-                    // check rook or queen
-                    if (/* rook */whoAtTempLocation.substring(6, 10).equals("rook")
-                            || /* queen */whoAtTempLocation.substring(6, 11).equals("queen")) {
-                        return true;
-                    }
-                } else {
-                    // if someone is their and they are on our side
+                } else if (tempLocation.equals(locationOfPiece)) {
+                    continue;
+                } else if (tempLocation.equals(LocationOfPieceAfterMove)) {
                     break;
                 }
 
@@ -1817,28 +2033,33 @@ public class board {
                     continue;
                 }
                 String whoAtTempLocation = whoIsAtLocationBackend(tempLocation);
+                if (!whoAtTempLocation.equals("")) {
 
-                if (whoseMove.equals("white") && whoAtTempLocation.substring(0, 1).equals("2")) {
-                    // we are white and we see a black piece
-                    // check rook or queen'
+                    if (whoseMove.equals("white") && whoAtTempLocation.substring(0, 1).equals("2")) {
+                        // we are white and we see a black piece
+                        // check rook or queen'
 
-                    if (/* rook */whoAtTempLocation.substring(6, 10).equals("rook")
-                            || /* queen */whoAtTempLocation.substring(6, 11).equals("queen")) {
-                        return true;
+                        if (/* rook */whoAtTempLocation.substring(7, 10).equals("rook")
+                                || /* queen */whoAtTempLocation.substring(7, 11).equals("queen")) {
+                            return true;
+                        }
+
+                    } else if (whoseMove.equals("black") && whoAtTempLocation.substring(0, 1).equals("1")) {
+                        // we are black and we see a white piece
+                        // check rook or queen
+                        if (/* rook */whoAtTempLocation.substring(7, 10).equals("rook")
+                                || /* queen */whoAtTempLocation.substring(7, 11).equals("queen")) {
+                            return true;
+                        }
+                    } else {
+                        // if someone is their and they are on our side
+                        break;
                     }
-
-                } else if (whoseMove.equals("black") && whoAtTempLocation.substring(0, 1).equals("1")) {
-                    // we are black and we see a white piece
-                    // check rook or queen
-                    if (/* rook */whoAtTempLocation.substring(6, 10).equals("rook")
-                            || /* queen */whoAtTempLocation.substring(6, 11).equals("queen")) {
-                        return true;
-                    }
-                } else {
-                    // if someone is their and they are on our side
+                } else if (tempLocation.equals(locationOfPiece)) {
+                    continue;
+                } else if (tempLocation.equals(LocationOfPieceAfterMove)) {
                     break;
                 }
-
             }
 
             // right
@@ -1852,28 +2073,31 @@ public class board {
                             continue;
                         }
                         String whoAtTempLocation = whoIsAtLocationBackend(tempLocation);
+                        if (!whoAtTempLocation.equals("")) {
 
-                        if (whoseMove.equals("white") && whoAtTempLocation.substring(0, 1).equals("2")) {
-                            // we are white and we see a black piece
-                            // check rook or queen'
+                            if (whoseMove.equals("white") && whoAtTempLocation.substring(0, 1).equals("2")) {
+                                // we are white and we see a black piece
+                                // check rook or queen'
 
-                            if (/* rook */whoAtTempLocation.substring(6, 10).equals("rook")
-                                    || /* queen */whoAtTempLocation.substring(6, 11).equals("queen")) {
-                                return true;
+                                if (/* rook */whoAtTempLocation.substring(7, 10).equals("rook")
+                                        || /* queen */whoAtTempLocation.substring(7, 11).equals("queen")) {
+                                    return true;
+                                }
+
+                            } else if (whoseMove.equals("black") && whoAtTempLocation.substring(0, 1).equals("1")) {
+                                // we are black and we see a white piece
+                                // check rook or queen
+                                if (/* rook */whoAtTempLocation.substring(7, 10).equals("rook")
+                                        || /* queen */whoAtTempLocation.substring(7, 11).equals("queen")) {
+                                    return true;
+                                }
+                            } else if (tempLocation.equals(locationOfPiece)) {
+                                continue;
+                            } else {
+                                // if someone is their and they are on our side
+                                break;
                             }
-
-                        } else if (whoseMove.equals("black") && whoAtTempLocation.substring(0, 1).equals("1")) {
-                            // we are black and we see a white piece
-                            // check rook or queen
-                            if (/* rook */whoAtTempLocation.substring(6, 10).equals("rook")
-                                    || /* queen */whoAtTempLocation.substring(6, 11).equals("queen")) {
-                                return true;
-                            }
-                        } else {
-                            // if someone is their and they are on our side
-                            break;
                         }
-
                     }
                 }
             }
@@ -1889,26 +2113,30 @@ public class board {
                             continue;
                         }
                         String whoAtTempLocation = whoIsAtLocationBackend(tempLocation);
+                        if (!whoAtTempLocation.equals("")) {
 
-                        if (whoseMove.equals("white") && whoAtTempLocation.substring(0, 1).equals("2")) {
-                            // we are white and we see a black piece
-                            // check rook or queen'
+                            if (whoseMove.equals("white") && whoAtTempLocation.substring(0, 1).equals("2")) {
+                                // we are white and we see a black piece
+                                // check rook or queen'
 
-                            if (/* rook */whoAtTempLocation.substring(6, 10).equals("rook")
-                                    || /* queen */whoAtTempLocation.substring(6, 11).equals("queen")) {
-                                return true;
+                                if (/* rook */whoAtTempLocation.substring(7, 10).equals("rook")
+                                        || /* queen */whoAtTempLocation.substring(7, 11).equals("queen")) {
+                                    return true;
+                                }
+
+                            } else if (whoseMove.equals("black") && whoAtTempLocation.substring(0, 1).equals("1")) {
+                                // we are black and we see a white piece
+                                // check rook or queen
+                                if (/* rook */whoAtTempLocation.substring(7, 10).equals("rook")
+                                        || /* queen */whoAtTempLocation.substring(7, 11).equals("queen")) {
+                                    return true;
+                                }
+                            } else if (tempLocation.equals(locationOfPiece)) {
+                                continue;
+                            } else {
+                                // if someone is their and they are on our side
+                                break;
                             }
-
-                        } else if (whoseMove.equals("black") && whoAtTempLocation.substring(0, 1).equals("1")) {
-                            // we are black and we see a white piece
-                            // check rook or queen
-                            if (/* rook */whoAtTempLocation.substring(6, 10).equals("rook")
-                                    || /* queen */whoAtTempLocation.substring(6, 11).equals("queen")) {
-                                return true;
-                            }
-                        } else {
-                            // if someone is their and they are on our side
-                            break;
                         }
 
                     }
@@ -2000,19 +2228,19 @@ public class board {
                     }
 
                     String whoAtTempLocation = whoIsAtLocationBackend(tempLocation);
-                    if (letterIsOnBoard) {
+                    if (letterIsOnBoard && !whoAtTempLocation.equals("")) {
                         if (whoseMove.equals("white") && whoAtTempLocation.substring(0, 1).equals("2")) {
                             // we are white and we see a black piece
                             // check knight
 
-                            if (whoAtTempLocation.substring(6, 12).equals("knight")) {
+                            if (whoAtTempLocation.substring(7, 12).equals("knight")) {
                                 return true;
                             }
 
                         } else if (whoseMove.equals("black") && whoAtTempLocation.substring(0, 1).equals("1")) {
                             // we are black and we see a white piece
                             // check knight or queen
-                            if (whoAtTempLocation.substring(6, 12).equals("knight")) {
+                            if (whoAtTempLocation.substring(7, 12).equals("knight")) {
                                 return true;
                             }
                         } else {
